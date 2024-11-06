@@ -55,7 +55,9 @@ const GLOBAL_NAVS: NavMap = {
     new NavTree("Dashboards", "sms-dashboard", "mdi-view-dashboard"),
     new NavTree("Reclassification", "sms-reclassification", "mdi-list-box-outline"),
     new NavTree("Endorsement", "sms-endorsement", "mdi-list-box-outline"),
-    new NavTree("Application Summary", "sms-summary", "mdi-list-box-outline")
+    new NavTree("Application Summary", "sms-summary", "mdi-list-box-outline"),
+    new NavTree("Exam Result", "exam", "mdi-list-box-outline"),
+    new NavTree("Maintenance Panel", "exam-maintainance", "mdi-list-box-outline"),
 
   ],
 

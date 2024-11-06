@@ -312,9 +312,6 @@
                     <v-form ref="user_form">
                         <v-row dense>
                             <v-col cols="12">
-
-
-
                                 <v-text-field v-model="user.email" density="compact" label="Email address"
                                     prepend-inner-icon="mdi-email-outline" required
                                     :rules="[(v) => /.+@.+/.test(v) || 'Invalid Email address']" /></v-col>
@@ -338,11 +335,7 @@
                                 <v-select v-model="user.role" :items="roles" item-title="name" item-value="_id"
                                     label="Role" hide-details="auto" :rules="[v => !!v || 'Role is required']" />
                             </v-col>
-
-
                         </v-row>
-
-
                     </v-form>
                 </v-card-text>
                 <v-divider />
