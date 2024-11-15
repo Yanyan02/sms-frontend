@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <v-card>
       <v-toolbar class="pa-6">
         <template v-slot:title>
@@ -10,40 +10,47 @@
             </v-col>
           </v-row>
         </template>
-        <template v-slot:append>
-          <v-btn @click="exam_dialog = true" class=" mt-2" color="primary" variant="outlined">
-            <v-icon class="pr-1">mdi-pencil-plus</v-icon>
-            Add
-          </v-btn>
-        </template>
+
       </v-toolbar>
       <hr />
       <v-card-text class="ma-5">
-        <v-row dense>
-          <v-col cols="2">
-            <v-select label="Filter by School" hide-details :items="school_data" item-value="_id" />
-          </v-col>
-          <v-col cols="2">
-            <v-select label="Filter by Section" hide-details :items="sections" />
-          </v-col>
-          <v-col cols="2">
-            <v-select label="Filter by Adviser" hide-details :items="advisers" />
-          </v-col>
-          <v-col cols="auto" class="d-flex justify-end align-center">
-            <v-btn class="mb-4 mt-2" color="primary" outlined>
-              <v-icon class="pr-1">mdi-filter</v-icon>
-              Filter
-            </v-btn>
-          </v-col>
-          <v-spacer />
-          <v-col cols="auto" class="d-flex justify-end align-center">
-
-          </v-col>
-        </v-row>
         <!-- School Cards Section -->
         <v-row dense>
-          <v-col cols="12"> <v-sheet border>
-              <v-data-table :headers="table_headers" :items="school_form_data" class="elevation-1">
+          <v-col cols="3">
+            <v-row dense>
+              <v-col cols="12">
+                <v-select label="Filter by School" hide-details :items="school_data" item-value="_id" />
+              </v-col>
+              <v-col cols="12">
+                <v-select label="Filter by Section" hide-details :items="sections" />
+              </v-col>
+              <v-col cols="12">
+                <v-select label="Filter by Adviser" hide-details :items="advisers" />
+              </v-col>
+              <v-col cols="12" class="d-flex justify-end align-center">
+                <v-btn class=" mt-2" color="primary" outlined block>
+                  <v-icon class="pr-1">mdi-filter</v-icon>
+                  Filter
+                </v-btn>
+              </v-col>
+              <v-col cols="12" class="d-flex justify-end align-center">
+                <v-btn @click="exam_dialog = true" color="primary" block>
+                  <v-icon class="pr-1">mdi-pencil-plus</v-icon>
+                  Add
+                </v-btn>
+              </v-col>
+              <v-spacer />
+              <v-col cols="auto" class="d-flex justify-end align-center">
+
+              </v-col>
+            </v-row></v-col>
+          <v-col cols="9"> <v-sheet border>
+              <v-data-table :headers="table_headers" :items="school_form_data">
+                <template v-slot:top>
+                  <v-toolbar border>
+                    <v-toolbar-title> List of Students</v-toolbar-title>
+                  </v-toolbar>
+                </template>
                 <template v-slot:item.students="{ item }">
                   <v-chip color="success" class="px-5">
                     {{ item?.selectable?.students?.length }}
@@ -95,14 +102,30 @@
 
     <v-dialog v-model="view_dialog" width="70%">
       <v-sheet>
+        <v-toolbar color="grey-lighten-2" border>
+          <v-list-item class="pl-2" density="compact">
+            <template v-slot:prepend>
+              <v-avatar class="mr-1" variant="text">
+                <v-icon icon="mdi-school" dark />
+              </v-avatar>
+            </template>
+            <v-list-item-title> View Classroom Exam Results </v-list-item-title>
+            <v-list-item-subtitle> Review Student Exam Results </v-list-item-subtitle>
+          </v-list-item>
+          <v-spacer />
+          <v-btn @click="view_dialog = false" class="mr-0" rounded="0" icon="mdi-close" />
+        </v-toolbar>
         <v-row no-gutters>
           <v-col cols="4">
-            <v-card title="Subject Examination Item" subtitle="Classroom examination items per Quarter.">
+            <v-card title="Subject Examination Item" subtitle="Classroom examination items per Quarter." flat>
               <v-card-text>
                 <v-card width="100%" max-width="600" class="mx-auto">
-                  <v-carousel height="400" hide-delimiters color="primary">
+                  <v-carousel height="auto" hide-delimiters color="primary">
                     <v-carousel-item v-for="(item, index) in classroom_data.exam_items" :key="index">
-                      <v-card variant="tonal" color="primary" :title="`Set exam item in ${item.name}`">
+                      <v-card color="primary" class="text-uppercase">
+                        <v-card-title class="text-body-2"> Display the set exam items for <i class="text-uppercase">{{
+                          item.name
+                        }} </i></v-card-title>
                         <div class="d-flex fill-height justify-center align-center">
                           <v-row justify="center">
                             <v-col cols="10">
@@ -110,45 +133,47 @@
                                 <v-row dense>
                                   <v-col cols="12" md="12" class="mb-2">
                                     <v-card class="ma-2 pa-2 px-5 elevation-2">
-                                      <div class="text-black">
-                                        <v-icon large class="mr-2" color="blue-grey darken-2">mdi-calendar</v-icon>
+                                      <div class="text-black text-body-1 text-uppercase">
+                                        <v-icon large class="mr-1" color="blue-grey darken-2">mdi-calendar</v-icon>
                                         First Quarter
                                       </div>
                                       <div class="text-black pl-8">
-                                        <strong class="text-h6">
+                                        <strong class="text-body-2"
+                                          :class="item.scores.second_sem ? 'text-yellow' : 'text-gray-500'">
                                           {{ item.scores.first_sem }} items
                                         </strong>
                                       </div>
+
                                     </v-card>
                                     <v-card class="ma-2 pa-2 px-5 elevation-2">
-                                      <div class="text-black">
-                                        <v-icon large class="mr-2" color="blue-grey darken-2">mdi-calendar</v-icon>
+                                      <div class="text-black text-body-1 text-uppercase">
+                                        <v-icon large class="mr-1" color="blue-grey darken-2">mdi-calendar</v-icon>
                                         Second Quarter
                                       </div>
                                       <div class="text-black pl-8">
-                                        <strong class="text-h6">
+                                        <strong class="text-body-2">
                                           {{ item.scores.second_sem ? item.scores.second_sem : 'TBA' }} items
                                         </strong>
                                       </div>
                                     </v-card>
                                     <v-card class="ma-2 pa-2 px-5 elevation-2">
-                                      <div class="text-black">
-                                        <v-icon large class="mr-2" color="blue-grey darken-2">mdi-calendar</v-icon>
+                                      <div class="text-black text-body-1 text-uppercase">
+                                        <v-icon large class="mr-1" color="blue-grey darken-2">mdi-calendar</v-icon>
                                         Third Quarter
                                       </div>
                                       <div class="text-black pl-8">
-                                        <strong class="text-h6">
+                                        <strong class="text-body-2">
                                           {{ item.scores.third_sem ? item.scores.third_sem : 'TBA' }} items
                                         </strong>
                                       </div>
                                     </v-card>
                                     <v-card class="ma-2 pa-2 px-5 elevation-2">
-                                      <div class="text-black">
-                                        <v-icon large class="mr-2" color="blue-grey darken-2">mdi-calendar</v-icon>
+                                      <div class="text-black text-body-1 text-uppercase">
+                                        <v-icon large class="mr-1" color="blue-grey darken-2">mdi-calendar</v-icon>
                                         Fourth Quarter
                                       </div>
                                       <div class="text-black pl-8">
-                                        <strong class="text-h6">
+                                        <strong class="text-body-2">
                                           {{ item.scores.forth_sem ? item.scores.forth_sem : 'TBA' }} items
                                         </strong>
                                       </div>
@@ -171,99 +196,101 @@
               subtitle="A brief overview of classroom examination result per Quarter.">
 
               <v-card-text style="height:78vh; justify-content: center; align-items: center;  overflow-y: auto; ">
-                <v-data-table :group-by="groupBy" :headers="headers" :items="classroom_data.students" item-value="name"
-                  class="my-data-table">
-                  <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
-                    <tr>
-                      <td :colspan="columns.length">
-                        <v-btn color="primary" :icon="isGroupOpen(item) ? '$expand' : '$next'" size="small"
-                          variant="text" @click="toggleGroup(item)"></v-btn>
-                        <v-chip color="primary">{{ item.value }}</v-chip>
-                      </td>
-                    </tr>
-                  </template>
-                  <template v-slot:item.name="{ item }">
-                    <span>{{ item.name }}</span>
-                  </template>
+                <v-sheet border>
+                  <v-data-table :group-by="groupBy" :headers="headers" :items="classroom_data.students"
+                    item-value="name" class="my-data-table">
+                    <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
+                      <tr>
+                        <td :colspan="columns.length">
+                          <v-btn color="primary" :icon="isGroupOpen(item) ? '$expand' : '$next'" size="small"
+                            variant="text" @click="toggleGroup(item)"></v-btn>
+                          <v-chip color="primary">{{ item.value }}</v-chip>
+                        </td>
+                      </tr>
+                    </template>
+                    <template v-slot:item.name="{ item }">
+                      <span>{{ item.name }}</span>
+                    </template>
 
-                  <template v-slot:item.subjects="{ item }">
+                    <template v-slot:item.subjects="{ item }">
 
-                    <v-list>
-                      <v-list-item-group>
-                        <v-list-item v-for="(subject, index) in item.selectable.semesters[0].subjects" :key="index">
-                          <v-list-item-content>
-                            <v-list-item-title>{{ subject.name }}</v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                    </v-list>
-                  </template>
-                  <template v-slot:item.firstQuarterScore="{ item }">
-                    <v-list>
-                      <v-list-item-group>
-                        <v-list-item v-for="(subject, index) in item.selectable.semesters[0].subjects || []"
-                          :key="index">
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              <span :style="{ color: subject.score < 35 ? 'red' : 'green' }">
-                                {{ subject.score !== null ? subject.score : '0' }}
-                              </span>
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                    </v-list>
-                  </template>
-                  <template v-slot:item.secondQuarterScore="{ item }">
-                    <v-list>
-                      <v-list-item-group>
-                        <v-list-item v-for="(subject, index) in item.selectable.semesters[1].subjects || []"
-                          :key="index">
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              <span :style="{ color: subject.score < 35 ? 'red' : 'green' }">
-                                {{ subject.score !== null ? subject.score : '0' }}
-                              </span>
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                    </v-list>
-                  </template>
-                  <template v-slot:item.thirdQuarterScore="{ item }">
-                    <v-list>
-                      <v-list-item-group>
-                        <v-list-item v-for="(subject, index) in item.selectable.semesters[2].subjects || []"
-                          :key="index">
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              <span :style="{ color: subject.score < 35 ? 'red' : 'green' }">
-                                {{ subject.score !== null ? subject.score : '0' }}
-                              </span>
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                    </v-list>
-                  </template>
-                  <template v-slot:item.fourthQuarterScore="{ item }">
-                    <v-list>
-                      <v-list-item-group>
-                        <v-list-item v-for="(subject, index) in item.selectable.semesters[3].subjects || []"
-                          :key="index">
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              <span :style="{ color: subject.score < 35 ? 'red' : 'green' }">
-                                {{ subject.score !== null ? subject.score : '0' }}
-                              </span>
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                    </v-list>
-                  </template>
+                      <v-list>
+                        <v-list-item-group>
+                          <v-list-item v-for="(subject, index) in item.selectable.semesters[0].subjects" :key="index">
+                            <v-list-item-content>
+                              <v-list-item-title>{{ subject.name }}</v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                      </v-list>
+                    </template>
+                    <template v-slot:item.firstQuarterScore="{ item }">
+                      <v-list>
+                        <v-list-item-group>
+                          <v-list-item v-for="(subject, index) in item.selectable.semesters[0].subjects || []"
+                            :key="index">
+                            <v-list-item-content>
+                              <v-list-item-title>
+                                <span :style="{ color: subject.score < 35 ? 'red' : 'green' }">
+                                  {{ subject.score !== null ? subject.score : '0' }}
+                                </span>
+                              </v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                      </v-list>
+                    </template>
+                    <template v-slot:item.secondQuarterScore="{ item }">
+                      <v-list>
+                        <v-list-item-group>
+                          <v-list-item v-for="(subject, index) in item.selectable.semesters[1].subjects || []"
+                            :key="index">
+                            <v-list-item-content>
+                              <v-list-item-title>
+                                <span :style="{ color: subject.score < 35 ? 'red' : 'green' }">
+                                  {{ subject.score !== null ? subject.score : '0' }}
+                                </span>
+                              </v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                      </v-list>
+                    </template>
+                    <template v-slot:item.thirdQuarterScore="{ item }">
+                      <v-list>
+                        <v-list-item-group>
+                          <v-list-item v-for="(subject, index) in item.selectable.semesters[2].subjects || []"
+                            :key="index">
+                            <v-list-item-content>
+                              <v-list-item-title>
+                                <span :style="{ color: subject.score < 35 ? 'red' : 'green' }">
+                                  {{ subject.score !== null ? subject.score : '0' }}
+                                </span>
+                              </v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                      </v-list>
+                    </template>
+                    <template v-slot:item.fourthQuarterScore="{ item }">
+                      <v-list>
+                        <v-list-item-group>
+                          <v-list-item v-for="(subject, index) in item.selectable.semesters[3].subjects || []"
+                            :key="index">
+                            <v-list-item-content>
+                              <v-list-item-title>
+                                <span :style="{ color: subject.score < 35 ? 'red' : 'green' }">
+                                  {{ subject.score !== null ? subject.score : '0' }}
+                                </span>
+                              </v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                      </v-list>
+                    </template>
 
-                </v-data-table>
+                  </v-data-table>
+                </v-sheet>
 
               </v-card-text>
             </v-card>
@@ -318,7 +345,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="exam_dialog" max-width="70%">
+    <v-dialog v-model="exam_dialog" max-width="80%">
       <v-card>
         <v-toolbar color="primary" class="elevation-4">
           <v-toolbar-title class="d-flex align-center">
@@ -363,7 +390,7 @@
                   </v-row>
 
                   <!-- Examination Items -->
-                  <v-sheet>
+                  <v-sheet v-if="hide">
                     <v-row dense class="text-center font-weight-medium text-body-2 mb-1 text-primary"
                       v-if="school_form.subjects.length > 0">
                       <v-col cols="12" class="my-1 text-start text-caption font-weight-medium text-grey text-uppercase">
@@ -396,11 +423,15 @@
                       </v-col>
 
                     </v-row>
-                    <v-row dense justify="end">
-                      <v-col cols="2"> <v-btn block density="compact" color="primary"> Hide</v-btn></v-col>
-                    </v-row>
-
                   </v-sheet>
+                  <v-row dense justify="end" v-if="school_form.exam_items.length">
+                    <v-col cols="auto">
+                      <v-btn @click="hide = !hide" block density="compact" color="primary">
+                        {{ hide ? 'Hide' : 'View Setted Exam Items' }}
+                      </v-btn>
+                    </v-col>
+
+                  </v-row>
 
                   <!-- Student Entry Form -->
                   <v-card outlined class="mt-4" color="grey lighten-4">
@@ -450,11 +481,8 @@
               <v-card border class="mx-auto">
                 <v-data-table :headers="student_headers" :items="school_form.students">
                   <template v-slot:item.actions="{ item }">
-                    <v-btn icon @click="view_item(item)" dark variant="text">
-                      <v-icon color="primary">mdi-eye</v-icon>
-                    </v-btn>
-                    <v-btn icon dark variant="text">
-                      <v-icon color="error">mdi-delete</v-icon>
+                    <v-btn color="error" density="compact">
+                      <v-icon>mdi-delete</v-icon> Remove
                     </v-btn>
                   </template>
                   <template v-slot:top>
@@ -474,25 +502,21 @@
           </v-row>
         </v-card-text>
         <v-divider></v-divider>
-
         <v-card-actions>
           <v-row justify="center" dense>
             <v-col cols="3"> <v-btn block text="Close" color="error" variant="tonal"></v-btn></v-col>
             <v-col cols="3"> <v-btn block @click="create_school_form" color="success" text="Save"
                 variant="tonal"></v-btn></v-col>
           </v-row>
-
-
         </v-card-actions>
       </v-card>
 
     </v-dialog>
-  </div>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-import useAuth from "~/store/auth";
-const user = useAuth().user;
+
 import { ref } from 'vue';
 const { $rest } = useNuxtApp();
 onBeforeMount(() => {
@@ -503,7 +527,9 @@ onBeforeMount(() => {
 
   ])
 })
-definePageMeta({ layout: "std-systems" });
+definePageMeta({ layout: "sample" });
+
+const hide = ref(true)
 const view = ref(null)
 const view_dialog = ref(false)
 const update_dialog = ref(false)

@@ -46,5 +46,20 @@
     "vue-router": "^4.0.13",
     "vue3-signature": "^0.2.4",
     "vuetify": "^3.1.0"
-  }
+  },
+  "name": "frontend",
+  "description": "### Nuxt 3 + Vuetify 3 > Support for the newest version of Nuxt and Vuetify allows us to do neat things such as the use of default-provider, improved components and others.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yanyan02/sms-frontend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yanyan02/sms-frontend/issues"
+  },
+  "homepage": "https://github.com/Yanyan02/sms-frontend#readme"
 }

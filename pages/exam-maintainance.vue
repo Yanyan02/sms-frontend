@@ -42,6 +42,7 @@
             <v-card-text>
               <!-- School Cards Section -->
               <v-row dense>
+
                 <v-col cols="4" v-for="(school, index) in school_data" :key="school">
                   <v-card elevation="3" class="mx-auto">
                     <v-card-text>
@@ -49,8 +50,8 @@
                         <v-chip class="text-overline mb-1 text-primary" density="compact">{{ new
                           Date(school?.date).toDateString()
                           }}</v-chip>
-                        <div class="text-h6 font-weight-bold mb-2">Canticum Elementary School</div>
-                        <div class="text-caption grey--text">Brgy Canticum, Calbiga Samar</div>
+                        <div class="text-h6 font-weight-bold mb-2">{{ school.name }}</div>
+                        <div class="text-caption grey--text">{{ school.address }}</div>
                       </div>
 
                     </v-card-text>
@@ -283,7 +284,7 @@ onBeforeMount(() => {
     get_subject()
   ])
 })
-definePageMeta({ layout: "std-systems" });
+definePageMeta({ layout: "sample-plain" });
 const tab = ref(null);
 const table_headers = ref([
   { title: "Date Invited", key: "date", sortable: false },
