@@ -1,5 +1,5 @@
 <template>
-  <v-sheet id="item-container" class="h-100 elevation-2" color="transparent" rounded="lg">
+  <v-sheet id="item-container" min-height="44vh" color="transparent">
     <v-toolbar class="d-block border-b" extension-height="64" :extended="Boolean($attrs.extended)">
       <v-toolbar-title>
         <v-list-item class="pl-0" :title="title" :subtitle="subtitle">
@@ -12,7 +12,7 @@
 
       <template v-if="$attrs.extended === ''" v-slot:extension>
         <v-divider />
-        <v-sheet class="pa-2" min-height="64" rounded="xl">
+        <v-sheet class="pa-2" min-height="40" rounded="xl">
           <slot name="extension" />
         </v-sheet>
       </template>

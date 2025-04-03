@@ -8,7 +8,7 @@
       </v-avatar> -->
       <v-app-bar-title class="pt-1 text-indigo text-uppercase" @click="$router.push({ name: 'home' })"
         style="cursor : pointer">
-        <!-- {{ $props.appbar_title }} -->Staffing Modification System
+        {{ $props.appbar_title }}
       </v-app-bar-title>
       <!-- <dev-display-debugger id="floater" /> -->
       <v-spacer />
@@ -19,8 +19,8 @@
             <v-icon class="mr-4" icon="mdi-book-open" color="primary" size="24" />
           </h6>
         </template>
-</v-tooltip>
--->
+</v-tooltip> -->
+
 
 
       <v-menu location="bottom center" location-strategy="connected" :close-on-content-click="false">
@@ -42,27 +42,21 @@
             </v-list>
 
             <v-list class="pt-0 pb-2 ma-4">
-              <v-list-item title="Maintenance Panel" color="primary"
-                :to="{ name: `sms-maintenance`, params: account_params }" v-if="user.side == 'RO'">
+              <v-list-item title="Projects" color="primary" :to="{ name: `tm`, params: account_params }">
                 <template v-slot:prepend>
                   <v-icon class="mr-1" icon="mdi-tools" />
                 </template>
               </v-list-item>
 
-              <v-list-item title="User Management" color="primary"
+              <!-- <v-list-item title="User Management" color="primary"
                 :to="{ name: `user-management`, params: account_params }" v-if="user.side == 'RO'">
 
                 <template v-slot:prepend>
                   <v-icon class="mr-1" icon="mdi-account" />
                 </template>
-              </v-list-item>
+              </v-list-item> -->
 
-              <v-list-item title="SDO Panel" color="primary" :to="{ name: `sdo`, query: { id: user.division } }"
-                v-if="user.side == 'SDO'">
-                <template v-slot:prepend>
-                  <v-icon class="mr-1" icon="mdi-key-chain" />
-                </template>
-              </v-list-item>
+
 
             </v-list>
           </v-card-text>
@@ -174,7 +168,7 @@
 
           Are you sure you want to <b> {{ model ? 'enable' :
             'disable'
-            }}</b> the submission of reclassification
+          }}</b> the submission of reclassification
           applications?
         </v-card-text>
         <v-card-actions>
@@ -220,7 +214,7 @@ onBeforeMount(() => {
 
 const openDialog = ref(false);
 
-let previousModel: boolean | undefined;
+
 
 const cancelUpdate = () => {
   openDialog.value = false;

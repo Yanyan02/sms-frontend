@@ -1,5 +1,5 @@
 <template>
-  <v-app >
+  <v-app>
     <layout-std-appbar appbar_title="Systems" :fluid="true">
       <template v-slot:nav-icon>
         <v-app-bar-nav-icon class="mr-4" expand-on-hover variant="text" @click.stop="drawer = !drawer" />
@@ -8,7 +8,7 @@
 
     <v-navigation-drawer v-model="drawer" :rail="$vuetify.display.smAndDown" clipped>
       <v-sheet>
-        <v-img class="ma-2" src="/prime-logo.png" cover contain />
+        <v-img class="ma-2" src="/hawkstow_logo.png" cover contain />
       </v-sheet>
 
       <v-sheet>
@@ -18,7 +18,7 @@
       </v-sheet>
     </v-navigation-drawer>
 
-    <v-main >
+    <v-main>
       <slot />
     </v-main>
   </v-app>

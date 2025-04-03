@@ -49,17 +49,25 @@ const GLOBAL_NAVS: NavMap = {
     new NavTree("Documentation", "documentation", "mdi-book-open"),
     new NavTree("Admin", "admin", "mdi-toolbox")
   ],
-
-  systems_navs: [
+    systems_navs: [
     new NavTree("Homepage", "sms-homepage", "mdi-home"),
     new NavTree("Dashboards", "sms-dashboard", "mdi-view-dashboard"),
-    new NavTree("Reclassification", "sms-reclassification", "mdi-list-box-outline"),
-    new NavTree("Endorsement", "sms-endorsement", "mdi-list-box-outline"),
-    new NavTree("Application Summary", "sms-summary", "mdi-list-box-outline"),
-    new NavTree("Exam Result", "exam", "mdi-list-box-outline"),
-    new NavTree("Maintenance Panel", "exam-maintainance", "mdi-list-box-outline"),
+    new NavTree("Projects", "operations", "mdi-folder-cog"),
+    new NavTree("Supplier", "supplier", "mdi-folder-cog"),
+    new NavTree("Purchasing", "purchasing", "mdi-folder-cog"),
 
   ],
+
+  // systems_navs: [
+  //   new NavTree("Homepage", "sms-homepage", "mdi-home"),
+  //   new NavTree("Dashboards", "sms-dashboard", "mdi-view-dashboard"),
+  //   new NavTree("Reclassification", "sms-reclassification", "mdi-list-box-outline"),
+  //   new NavTree("Endorsement", "sms-endorsement", "mdi-list-box-outline"),
+  //   new NavTree("Application Summary", "sms-summary", "mdi-list-box-outline"),
+  //   new NavTree("Exam Result", "exam", "mdi-list-box-outline"),
+  //   new NavTree("Maintenance Panel", "exam-maintainance", "mdi-list-box-outline"),
+
+  // ],
 
   dev_navs: [
     new NavTree("Overview", "admin-domain-service", "mdi-home"),

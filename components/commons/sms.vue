@@ -1,7 +1,7 @@
 <template>
   <v-card id="item-container" class="h-100" color="grey-lighten-5" rounded="0">
-    <v-toolbar class="d-block border-b" extension-height="64" color="grey-lighten-2"
-      :extended="Boolean($attrs.extended)">
+    <v-toolbar class="d-block border-b gradient-green" extension-height="64" :extended="Boolean($attrs.extended)">
+
       <v-toolbar-title>
 
         <v-list-item class="pl-0" :title="title" :subtitle="subtitle">
@@ -151,5 +151,10 @@ export default {
 <style scoped>
 ::v-deep(.v-toolbar__extension) {
   display: block
+}
+
+.gradient-green {
+  background: linear-gradient(to right, #2e7d32, #66bb6a, #a5d6a7);
+  color: #e8f5e9;
 }
 </style>

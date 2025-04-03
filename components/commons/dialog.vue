@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-bind="$props">
     <v-card rounded="lg">
-      <v-toolbar color="indigo" v-if="$attrs['hide-toolbar'] !== ''" border>
+      <v-toolbar color="green" v-if="$attrs['hide-toolbar'] !== ''" border>
         <v-list-item class="pl-2" density="compact">
           <template v-if="$attrs.icon" v-slot:prepend>
             <v-avatar class="mr-1" variant="text">
@@ -11,7 +11,7 @@
 
           <v-list-item-title>{{ $attrs.title }}</v-list-item-title>
           <v-list-item-subtitle v-if="$attrs.subtitle">{{ $attrs.subtitle }}</v-list-item-subtitle>
-        </v-list-item>
+        </v-list-item>W
 
         <v-spacer />
         <v-btn class="mr-0" @click="$emit('update:modelValue', false)" rounded="0" icon="mdi-close" />
