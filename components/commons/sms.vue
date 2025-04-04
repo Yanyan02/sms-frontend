@@ -1,24 +1,14 @@
 <template>
   <v-card id="item-container" class="h-100" color="grey-lighten-5" rounded="0">
     <v-toolbar class="d-block border-b gradient-green" extension-height="64" :extended="Boolean($attrs.extended)">
-
       <v-toolbar-title>
-
         <v-list-item class="pl-0" :title="title" :subtitle="subtitle">
           <template v-if="$attrs.icon || $attrs.img" v-slot:prepend>
             <v-avatar class="mr-3" v-if="$attrs.icon" rounded="0" size="28" :icon="$attrs.icon" />
             <img class="pr-3" v-else-if="Boolean($attrs.img)" height="28" :src="String($attrs.img)" />
           </template>
         </v-list-item>
-
       </v-toolbar-title>
-
-      <template v-if="$attrs.extended === ''" v-slot:extension>
-        <v-divider />
-        <v-sheet class="pa-1" min-height="64" rounded="0">
-          <slot name="extension" />
-        </v-sheet>
-      </template>
 
       <v-toolbar-items>
         <v-btn-toggle v-model="display_mode" style="align-self: center" dense mandatory>
@@ -35,8 +25,9 @@
 
     <slot name="prepend-body" />
 
-    <v-sheet class="rounded-b-lg" color="transparent" :height="Number($attrs.height)"
-      :max-height="Number($attrs['max-height'])" style="overflow-y : auto">
+    <!-- Fixed max-height 80vh with scrollbar -->
+    <v-sheet class="rounded-b-lg overflow-auto" color="transparent"
+      style="height: 80vh; max-height: 80vh; overflow-y: auto;">
       <v-card-text>
         <v-row v-if="!items.length && $attrs['display-type'] !== 'table'" justify="center" align="center" dense>
           No Item Found
@@ -44,19 +35,12 @@
 
         <v-row class="h-100" dense>
           <v-col v-if="display_type === 'table'">
-            <!--
-            Slot for table was preferred instead of passing props from this component to a nested table to allow
-            for customization of the table (slots, events, etc.)
-          -->
             <slot name="table" :items="items" :headers="$attrs.headers" />
           </v-col>
 
           <v-col v-for="(item, i) in items" :key="i" v-else :cols="cols.default" :xl="cols.xl" :lg="cols.lg"
             :md="cols.md" :sm="cols.sm">
-            <v-skeleton-loader class="mx-auto border" v-if="loading" type="card, actions" rounded="lg">
-
-            </v-skeleton-loader>
-
+            <v-skeleton-loader class="mx-auto border" v-if="loading" type="card, actions" rounded="lg" />
             <slot name="item" :value="item" :index="i" :display="display_type" v-else />
           </v-col>
         </v-row>
@@ -66,6 +50,7 @@
     <slot name="default" />
   </v-card>
 </template>
+
 <script lang="ts">
 export default {
   props: {
@@ -84,13 +69,11 @@ export default {
       required: false,
       default: []
     },
-
     loading: {
       type: Boolean,
       required: false,
       default: false
     },
-
     display: {
       type: Number,
       required: false,
@@ -115,9 +98,8 @@ export default {
         "grid": "view-grid",
         "list": "view-list",
       },
-
       selected: []
-    }
+    };
   },
 
   computed: {
@@ -145,12 +127,12 @@ export default {
       };
     }
   }
-}
+};
 </script>
 
 <style scoped>
 ::v-deep(.v-toolbar__extension) {
-  display: block
+  display: block;
 }
 
 .gradient-green {

@@ -11,7 +11,7 @@
 
           <v-list-item-title>{{ $attrs.title }}</v-list-item-title>
           <v-list-item-subtitle v-if="$attrs.subtitle">{{ $attrs.subtitle }}</v-list-item-subtitle>
-        </v-list-item>W
+        </v-list-item>
 
         <v-spacer />
         <v-btn class="mr-0" @click="$emit('update:modelValue', false)" rounded="0" icon="mdi-close" />

@@ -29,8 +29,8 @@
                 <v-select class="mb-2" :items="['2025']" label="Year" outlined hide-details></v-select>
                 <v-select class="mb-2" v-model="pr.project" label="Project" :items="project_data" item-title="name"
                   item-value="_id" density="compact" variant="outlined" hide-details />
-                <v-select class="mb-2" v-model="pr.type" label="Type" :items="['purchase_request', 'Purchase Order']"
-                  outlined hide-details></v-select>
+                <v-select v-model="pr.type" label="Request type" :items="print_items" item-title="text"
+                  item-value="value" density="compact" variant="outlined" hide-details />
 
               </v-col>
 
@@ -40,7 +40,7 @@
                 </v-btn>
               </v-col>
               <v-col cols="12">
-                <v-btn block color="blue darken-4" @click="print_result" class="white--text">
+                <v-btn block color="blue darken-4" @click="print_result(pr.type)" class="white--text">
                   Print
                 </v-btn>
               </v-col>
@@ -52,11 +52,12 @@
 
             </v-row></v-card-text>
         </v-sheet>
-        <v-sheet border width="80%" min-height="80vh">
+        <v-sheet border width="80%" height="80vh">
           <commons-sms title="Summary of Purchase Requisition" icon="mdi-note-text-outline"
             :items="purchase_request_data" :display_types="['grid', 'table']">
+
             <template v-slot:table="{ items }">
-              <v-sheet border>
+              <v-card-text border style="max-height: 80vh; overflow-y: auto;">
                 <v-data-table :items="purchase_request_data" :headers="purchase_request_header">
                   <template v-slot:item.no="{ item }">
                     <v-chip density="compact" class="text-caption" color="amber" variant="tonal">
@@ -76,7 +77,7 @@
                     <v-btn density="compact" color="primary">Actions</v-btn>
                   </template>
                 </v-data-table>
-              </v-sheet>
+              </v-card-text>
             </template>
             <template v-slot:item="{ value, index, display }">
               <v-card class="mx-auto" rounded="lg" color="primary" variant="tonal">
@@ -106,7 +107,8 @@
 
                       <v-menu :close-on-content-click="false" location="end">
                         <template v-slot:activator="{ props }">
-                          <v-btn v-bind="props" density="compact" color="primary">Manage</v-btn>
+                          <v-btn v-bind="props" density="compact" color="primary" @click="get_pr(value._id)"> Manage
+                          </v-btn>
                         </template>
                         <v-card min-width="300">
                           <v-list>
@@ -118,15 +120,11 @@
                           </v-list>
                           <v-divider></v-divider>
                           <v-list lines="two" class="elevation-1" density="compact">
-                            <v-list-item @click="get_pr(value?._id)" title="Purchase Requisition"
-                              subtitle="Print and View of PR form">
+
+                            <v-list-item v-for="item in menu_items" :key="item.value" :title="item.text"
+                              :subtitle="item.subtitle" @click="print_request(item.value)">
                               <template v-slot:prepend>
-                                <v-icon color="primary" size="22">mdi-printer</v-icon>
-                              </template>
-                            </v-list-item>
-                            <v-list-item title="Purchase Order" subtitle="Print and View of PO form">
-                              <template v-slot:prepend>
-                                <v-icon color="primary" size="22">mdi-printer</v-icon>
+                                <v-icon :color="'primary'" :size="22">{{ item.icon }}</v-icon>
                               </template>
                             </v-list-item>
 
@@ -168,16 +166,19 @@
 
                   <v-col cols="12">
                     Address : {{(project_data.find(p => p?._id === pr.project) || {}).address || ''}}
-
                   </v-col>
+
+                  <v-col cols="12"> <v-select v-model="pr.supplier" label="Supplier" :items="supplier_data"
+                      item-title="name" item-value="_id" density="compact" variant="outlined" hide-details /></v-col>
                   <v-col cols="12">
                     <v-text-field v-model="pr.requested_by" label="Requested by" density="compact" variant="outlined"
                       hide-details />
                   </v-col>
                   <v-col cols="12">
-                    <v-select v-model="pr.type" label="Request type" :items="['purchase_request', 'purchase_order']"
-                      density="compact" variant="outlined" hide-details />
+                    <v-select v-model="pr.type" label="Request type" :items="print_items" item-title="text"
+                      item-value="value" density="compact" variant="outlined" hide-details />
                   </v-col>
+
                   <v-divider class="my-3"></v-divider>
                   <!-- Heading for Item Details Section -->
                   <h4 class="mb-2 text-primary font-weight-bold">Item Details</h4>
@@ -262,7 +263,7 @@
 
 <script lang="ts" setup>
 import useAuth from "~/store/auth";
-
+import swal from 'sweetalert';
 const { $rest } = useNuxtApp();
 const auth = useAuth();
 const user = useAuth().user;
@@ -271,6 +272,7 @@ const router = useRouter();
 onBeforeMount(() => {
   Promise.all([
     get_project(),
+    get_supplier(),
     get_purchase_request(),
 
 
@@ -294,6 +296,7 @@ interface PR {
   project: string;
   requested_by: string;
   type: string;
+  supplier: string;
   items: {
     description: string;
     unit: string;
@@ -305,6 +308,7 @@ interface PR {
 const pr = ref<PR>({
   project: "",
   requested_by: "",
+  supplier: "",
   items: [],
   type: ""
 });
@@ -367,10 +371,10 @@ async function get_project() {
   project_data.value = data;
 }
 
-const print_result = () => {
+const print_result = (type: string) => {
   const result = purchase_request_data.value
   router.push({
-    name: 'printable-purchase-request',
+    name: `printable-${type}`,
     query: {
       result: JSON.stringify(result)
     }
@@ -379,14 +383,67 @@ const print_result = () => {
 
 const pr_data = ref([])
 async function get_pr(id: any) {
-  console.log("IDDDDDDD", id);
-
   const { data, error } = await $rest('purchasing/get-purchase-request-id', {
     method: "GET",
     query: { id: id }
   });
   pr_data.value = data
 }
+
+const print_request = (type: string) => {
+  if (pr_data.value.length === 0) return swal({ text: "No data found!", icon: "error" });
+
+  const result = pr_data.value
+  router.push({
+    name: `printable-${type}`,
+    query: {
+      result: JSON.stringify(result)
+    }
+  });
+}
+
+const supplier_data = ref([])
+async function get_supplier() {
+  const { data } = await $rest('supplier/get-supplier', { method: "GET" });
+  supplier_data.value = data;
+}
+
+
+const print_items = ref([
+  {
+    text: "Purchase Requisition",
+    value: "purchase-request"
+
+  },
+  {
+    text: "Purchase Order",
+    value: "purchase-order"
+  },
+  {
+    text: "Material Receiving",
+    value: "purchase-receiving"
+  }
+])
+const menu_items = ref([
+  {
+    text: "Purchase Requisition",
+    subtitle: "Print & View PR",
+    value: "purchase-request",
+    icon: "mdi-file-document"
+  },
+  {
+    text: "Purchase Order",
+    subtitle: "Print & View PO",
+    value: "purchase-order",
+    icon: "mdi-cart"
+  },
+  {
+    text: "Material Receiving",
+    subtitle: "Print & View Receiving",
+    value: "purchase-receiving",
+    icon: "mdi-package-variant-closed"
+  }
+]);
 
 
 </script>

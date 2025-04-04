@@ -52,9 +52,10 @@ const GLOBAL_NAVS: NavMap = {
     systems_navs: [
     new NavTree("Homepage", "sms-homepage", "mdi-home"),
     new NavTree("Dashboards", "sms-dashboard", "mdi-view-dashboard"),
-    new NavTree("Projects", "operations", "mdi-folder-cog"),
-    new NavTree("Supplier", "supplier", "mdi-folder-cog"),
-    new NavTree("Purchasing", "purchasing", "mdi-folder-cog"),
+    new NavTree("Projects", "operations", "mdi-folder-wrench"),
+    new NavTree("Supplier", "supplier", "mdi-truck"),
+    new NavTree("Purchasing", "purchasing", "mdi-cart-variant"),
+        new NavTree("Motorpool", "motorpool", "mdi-car"),
 
   ],
 

@@ -1,169 +1,6 @@
 <template>
-  <!-- <v-container fluid>
 
-    <v-row dense>
-
-      <v-col cols="12" md="6" sm="12">
-        <h2 class="font-weight-medium text-primary">
-          Master List of External Providers
-        </h2>
-        <small class="font-weight-thin" style="color: #B1D182;">
-          Overview of external providers items and services
-        </small>
-      </v-col>
-
-
-      <v-col cols="12" md="6" sm="12" class="d-flex">
-        <v-btn @click="supplierDialog = true" variant="text" class="mr-2">
-          <v-icon class="pr-3" color="#228B22">mdi-account</v-icon>
-          Add External Supplier
-        </v-btn>
-        <v-btn @click="supplierInvitationDialog = true" variant="text">
-          <v-icon class="pr-3" color="#228B22">mdi-email</v-icon>
-          Invite Supplier
-        </v-btn>
-
-      </v-col>
-    </v-row>
-
-    <v-row no-gutters>
-      <v-col cols="12">
-        <hr class="mb-2" color="#115D33" />
-      </v-col>
-      <v-col cols="12" xl="2" lg="3" xs="12" sm="12" md="3">
-        <v-sheet border color="#E8F5E9" height="44vh">
-          <v-card-text>
-            <v-row dense>
-              <v-col cols="12">
-                <h3 class="font-weight-medium text-primary">Filter External Providers</h3>
-                <small style="color: #B1D182;">
-                  Use the filters below to narrow down the external providers by Year and Status. After applying the
-                  filters, you can print the filtered results.
-                </small>
-              </v-col>
-              <v-col cols="12" class="mb-3">
-                <v-select label="Year" outlined hide-details></v-select>
-              </v-col>
-              <v-col cols="12" class="mb-3">
-                <v-select label="Status" outlined hide-details></v-select>
-              </v-col>
-              <v-col cols="12">
-                <v-btn block color="success" class="white--text">
-                  Filter
-                </v-btn>
-              </v-col>
-              <v-col cols="12">
-                <v-btn block color="blue darken-4" class="white--text">
-                  Print
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-sheet>
-      </v-col>
-
-      <v-col cols="12" xl="10" lg="9" xs="12" sm="12" md="9">
-        <v-sheet border>
-          <commons-item-container title="Suppliers" icon="mdi-note-text-outline" :items="sampleSupplier"
-            :display_types="['grid', 'table']">
-            <template v-slot:table="{ items }">
-              <v-data-table :items="items" :headers="supplier_header">
-                <template v-slot:item.actions="{ item }">
-                  <v-btn density="compact" color="primary">Actions</v-btn>
-                </template>
-</v-data-table>
-</template>
-<template v-slot:item="{ value }">
-              <v-card class="mx-auto reclass-item" rounded="lg" border>
-                <v-card-text>
-                  <div class="d-flex mt-1 flex-wrap">
-
-                    <div>
-                      <div class="w-100 text-body-1 text-primary font-weight-bold">
-                        {{ value.company }}
-                      </div>
-                      <small>Owner: {{ value.owner }}</small><br />
-                      <small>Contact Person: {{ value.contact_person }}</small><br />
-                      <small>Contact Number: {{ value.contact_person_number }}</small>
-                    </div>
-                  </div>
-                </v-card-text>
-              </v-card>
-            </template>
-</commons-item-container>
-</v-sheet>
-</v-col>
-</v-row>
-<v-row no-gutters class="mt-3">
-
-  <v-col cols="12" xl="2" lg="3" xs="12" sm="12" md="3">
-    <v-sheet border color="#E8F5E9" height="44vh">
-      <v-card-text>
-        <v-row dense>
-          <v-col cols="12">
-            <h3 class="font-weight-medium text-primary">Filter Requests</h3>
-            <small style="color: #B1D182;">
-              Use the filters below to narrow down the external providers by Year and Status. After applying the
-              filters, you can print the filtered results.
-            </small>
-
-          </v-col>
-          <v-col cols="12" class="mb-3">
-            <v-select label="Year" outlined hide-details></v-select>
-          </v-col>
-          <v-col cols="12" class="mb-3">
-            <v-select label="Status" outlined hide-details></v-select>
-          </v-col>
-          <v-col cols="12">
-            <v-btn block color="success" class="white--text">
-              Filter
-            </v-btn>
-          </v-col>
-          <v-col cols="12">
-            <v-btn block color="blue darken-4" class="white--text">
-              Print
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-sheet>
-  </v-col>
-
-  <v-col cols="12" xl="10" lg="9" xs="12" sm="12" md="9">
-    <v-sheet border>
-      <commons-item-container title="Requests" icon="mdi-note-text-outline" :items="sampleSupplier"
-        :display_types="['grid', 'table']">
-        <template v-slot:table="{ items }">
-              <v-data-table :items="items" :headers="supplier_header">
-                <template v-slot:item.actions="{ item }">
-                  <v-btn density="compact" color="primary">Actions</v-btn>
-                </template>
-        </v-data-table>
-        </template>
-        <template v-slot:item="{ value }">
-              <v-card class="mx-auto reclass-item" rounded="lg" border>
-                <v-card-text>
-                  <div class="d-flex mt-1 flex-wrap">
-
-                    <div>
-                      <div class="w-100 text-body-1 text-primary font-weight-bold">
-                        {{ value.company }}
-                      </div>
-                      <small>Owner: {{ value.owner }}</small><br />
-                      <small>Contact Person: {{ value.contact_person }}</small><br />
-                      <small>Contact Number: {{ value.contact_person_number }}</small>
-                    </div>
-                  </div>
-                </v-card-text>
-              </v-card>
-            </template>
-      </commons-item-container>
-    </v-sheet>
-  </v-col>
-</v-row>
-</v-container> -->
-
-  <v-sheet class="mt-4">
+  <v-sheet class="ma-4">
     <v-toolbar flat class="py-2" color="transparent">
       <template v-slot:title>
         <v-row dense>
@@ -192,76 +29,7 @@
     <hr class="mb-2" color="#115D33" />
     <v-row dense>
       <v-col cols="12" class="d-flex">
-        <v-sheet width="20%" border color="#F9FBE7">
-          <v-card-text class="mt-8">
-            <v-row dense>
-              <v-col cols="12">
-                <v-select class="mb-1" label="Year" outlined hide-details></v-select>
-                <v-select class="mb-1" label="Project" outlined hide-details></v-select>
-                <v-select class="mb-1" label="Type" outlined hide-details></v-select>
-                <v-select class="mb-1" label="Status" outlined hide-details></v-select>
-              </v-col>
-
-              <v-col cols="12">
-                <v-btn block color="success" class="white--text">
-                  Filter
-                </v-btn>
-              </v-col>
-              <v-col cols="12">
-                <v-btn block color="blue darken-4" class="white--text">
-                  Print
-                </v-btn>
-              </v-col>
-              <v-col cols="12">
-                <v-btn block color="amber">
-                  Create
-                </v-btn>
-              </v-col>
-
-            </v-row></v-card-text>
-        </v-sheet>
-        <v-sheet border width="80%">
-          <commons-item-container title="Summary of Purchase Requisition" icon="mdi-note-text-outline"
-            :items="sampleSupplier" :display_types="['grid', 'table']">
-            <template v-slot:table="{ items }">
-              <v-sheet border>
-                <v-data-table :items="items" :headers="supplier_header">
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn density="compact" color="primary">Actions</v-btn>
-                  </template>
-                </v-data-table>
-              </v-sheet>
-            </template>
-            <template v-slot:item="{ value, index, display }">
-
-              <v-card class="mx-auto reclass-item" rounded="lg" border>
-
-                <v-card-text>
-                  <div class="d-flex mt-1">
-                    <div class="pr-3">
-                      <v-img :width="80" aspect-ratio="4/3" cover>
-                        <v-avatar v-bind="$attrs" class="ml-2" color="primary" style="cursor: pointer" size="62">
-                          <span class="text-h6">{{ value.owner.charAt(0) }}</span>
-                        </v-avatar>
-                      </v-img>
-                    </div>
-                    <div>
-                      <div class="w-40 text-body-1 text-primary font-weight-bold d-flex">
-                        {{ value.company }}
-                      </div>
-                      <small> Owner : {{ value.owner }}</small> <br />
-                      <small> Contact Person : {{ value.contact_person }}</small> <br />
-                      <small> Contact Number : {{ value.contact_person_number }}</small>
-                    </div>
-                  </div>
-                </v-card-text>
-              </v-card>
-            </template>
-          </commons-item-container>
-        </v-sheet>
-      </v-col>
-      <v-col cols="12" class="d-flex">
-        <v-sheet width="20%" border color="#E8F5E9">
+        <v-sheet width="20%" border color="#F9FBE7" min-height="80vh">
           <v-card-text class="mt-8">
             <v-row dense>
               <v-col cols="12" class="mb-3">
@@ -270,6 +38,9 @@
               <v-col cols="12" class="mb-3">
                 <v-select label="Status" outlined hide-details></v-select>
               </v-col>
+              <v-col cols="12" class="mb-3">
+                <v-select label="Type" outlined hide-details></v-select>
+              </v-col>
               <v-col cols="12">
                 <v-btn block color="success" class="white--text">
                   Filter
@@ -280,15 +51,16 @@
                   Print
                 </v-btn>
               </v-col>
+
             </v-row>
           </v-card-text>
         </v-sheet>
-        <v-sheet border width="80%">
-          <commons-item-container title="Suppliers" icon="mdi-note-text-outline" :items="sampleSupplier"
+        <v-sheet border width="80%" height="80vh">
+          <commons-sms title="Suppliers" icon="mdi-note-text-outline" :items="supplier_data"
             :display_types="['grid', 'table']">
             <template v-slot:table="{ items }">
               <v-sheet border>
-                <v-data-table :items="items" :headers="supplier_header">
+                <v-data-table :items="supplier_data" :headers="supplier_header">
                   <template v-slot:item.actions="{ item }">
                     <v-btn density="compact" color="primary">Actions</v-btn>
                   </template>
@@ -297,8 +69,7 @@
             </template>
             <template v-slot:item="{ value, index, display }">
 
-              <v-card class="mx-auto reclass-item" rounded="lg" border>
-
+              <v-card class="mx-auto reclass-item" rounded="lg" variant="tonal" color="primary">
                 <v-card-text>
                   <div class="d-flex mt-1">
                     <div class="pr-3">
@@ -309,18 +80,58 @@
                       </v-img>
                     </div>
                     <div>
-                      <div class="w-40 text-body-1 text-primary font-weight-bold d-flex">
-                        {{ value.company }}
+                      <div class="w-40 text-body-1 text-primary font-weight-bold text-uppercase d-flex">
+                        {{ value.name }}
                       </div>
-                      <small> Owner : {{ value.owner }}</small> <br />
-                      <small> Contact Person : {{ value.contact_person }}</small> <br />
-                      <small> Contact Number : {{ value.contact_person_number }}</small>
+                      <span> Address : {{ value.address }}</span> <br />
+                      <span> Owner : {{ value.owner }}</span> <br />
+
+                      <span> Contact Person : {{ value.contact_person }}</span> <br />
+                      <span> Contact Number : {{ value.contact_number }}</span> <br />
+                      <v-menu :close-on-content-click="false" location="end">
+                        <template v-slot:activator="{ props }">
+                          <v-btn v-bind="props" density="compact" color="primary">Manage</v-btn>
+                        </template>
+                        <v-card min-width="300">
+                          <v-list>
+                            <v-list-item title="Manage Supplier">
+                              <template v-slot:append>
+                                <v-icon color="green darken-4" size="24">mdi-truck</v-icon>
+                              </template>
+                            </v-list-item>
+                          </v-list>
+                          <v-divider></v-divider>
+                          <v-list lines="two" class="elevation-1" density="compact">
+                            <v-list-item title="Information Sheet" subtitle="External Provider Information Sheet">
+                              <template v-slot:prepend>
+                                <v-icon color="primary" size="22">mdi-eye</v-icon>
+                              </template>
+                            </v-list-item>
+                            <v-list-item title="Qualification Form" subtitle="External Provider Qualification Sheet">
+                              <template v-slot:prepend>
+                                <v-icon color="primary" size="22">mdi-printer</v-icon>
+                              </template>
+                            </v-list-item>
+                            <v-list-item title="Performance Evaluation" subtitle="Performance Evaluation Qualification
+                              Sheet">
+                              <template v-slot:prepend>
+                                <v-icon color="primary" size="22">mdi-printer</v-icon>
+                              </template>
+                            </v-list-item>
+
+                          </v-list>
+                          <v-card-actions>
+                            <v-spacer />
+                            <v-btn variant="text" color="error">Close</v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-menu>
                     </div>
                   </div>
                 </v-card-text>
               </v-card>
             </template>
-          </commons-item-container>
+          </commons-sms>
 
         </v-sheet>
       </v-col>
@@ -335,7 +146,7 @@
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <v-text-field label="Company Name*" v-model="supplier.company" required />
+              <v-text-field label="Company Name*" v-model="supplier.name" required />
             </v-col>
 
             <v-col cols="12" md="6">
@@ -355,16 +166,13 @@
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field label="Contact Number*" v-model="supplier.number" required />
+              <v-text-field label="Contact Number*" v-model="supplier.contact_number" required />
             </v-col>
 
             <v-col cols="12" md="6">
               <v-text-field label="Contact Person*" v-model="supplier.contact_person" required />
             </v-col>
 
-            <v-col cols="12" md="6">
-              <v-text-field label="Contact Person Number*" v-model="supplier.contact_person_number" required />
-            </v-col>
 
             <v-col cols="12">
               <v-autocomplete label="Products/Services" v-model="supplier.products" multiple></v-autocomplete>
@@ -375,7 +183,7 @@
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-file-input label="Product Catalog" v-model="supplier.product_catalog" show-size></v-file-input>
+              <v-file-input label="Product Catalog" v-model="supplier.catalog" show-size></v-file-input>
             </v-col>
           </v-row>
         </v-card-text>
@@ -386,7 +194,7 @@
           <v-spacer></v-spacer>
 
           <v-btn text="Close" variant="plain"></v-btn>
-          <v-btn color="primary" text="Save" variant="tonal"></v-btn>
+          <v-btn color="primary" @click="create_supplier" text="Save" variant="tonal"></v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -420,7 +228,12 @@ const { $rest } = useNuxtApp();
 const auth = useAuth();
 const user = useAuth().user;
 
+onBeforeMount(() => {
+  Promise.all([
+    get_supplier(),
 
+  ])
+})
 definePageMeta({ layout: "std-systems" });
 const supplierInvitationDialog = ref(false)
 const supplierDialog = ref(false);
@@ -428,48 +241,37 @@ const supplierDialog = ref(false);
 
 
 interface Supplier {
-  company: string;
+  name: string;
   owner: string;
   address: string;
   nature: string;
   email: string;
-  number: string;
+  contact_number: string;
   contact_person: string;
-  contact_person_number: string;
   products: string[];
-  company_profile: string;
-  product_catalog: string;
+  company_profile: Array;
+  catalog: Array;
 }
 
 
 
 const supplier = ref<Supplier>({
-  company: "",
+  name: "",
   owner: "",
   address: "",
   nature: "",
   email: "",
-  number: "",
+  contact_number: "",
   contact_person: "",
-  contact_person_number: "",
   products: [],
-  company_profile: "",
-  product_catalog: "",
+  company_profile: [],
+  catalog: [],
 });
 
-const sampleSupplier = ref([
-  {
-    company: "Southern Convergence",
-    owner: "Marianne Mae Paclian",
-    address: "Antipolo",
-    nature: "Service",
-    contact_person: "098776654335"
-  }
-])
 
 
 const supplier_header = ref([
-  { title: "Company Name", key: "company", sortable: false },
+  { title: "Company Name", key: "name", sortable: false },
   { title: "Owner", key: "owner", sortable: false },
   { title: "Contact Person", key: "contactPerson", sortable: false },
   { title: "Nature", key: "nature", sortable: false },
@@ -477,6 +279,22 @@ const supplier_header = ref([
   { title: "Actions", key: "actions", sortable: false, align: "center" },
 ])
 
+async function create_supplier() {
+  const { data, error } = await $rest('supplier/create-supplier', {
+    method: "POST",
+    body: { ...supplier.value }
+  });
+  if (error) return swal({ title: "Error", text: error, icon: "error" });
+  swal({ title: "Success", text: data, icon: "success" });
+  get_supplier()
+
+
+}
+const supplier_data = ref([])
+async function get_supplier() {
+  const { data } = await $rest('supplier/get-supplier', { method: "GET" });
+  supplier_data.value = data;
+}
 </script>
 
 <style scoped>
