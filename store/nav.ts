@@ -55,6 +55,7 @@ const GLOBAL_NAVS: NavMap = {
     new NavTree("Projects", "operations", "mdi-folder-wrench"),
     new NavTree("Supplier", "supplier", "mdi-truck"),
     new NavTree("Purchasing", "purchasing", "mdi-cart-variant"),
+         new NavTree("Warehouse", "warehouse", "mdi-home"),
         new NavTree("Motorpool", "motorpool", "mdi-car"),
 
   ],

@@ -1,104 +1,107 @@
 <template>
-  <div>
+  <div v-for="(pr, index) in purchaseData" :key="index">
+    {{ purchaseData.length }}
 
-    <body class="printable-page" v-for="(pr, index) in purchaseData" :key="index">
-      <div class="pa-2 pt-5" v-for="n in 2" :key="n">
-        <!-- Loop through the PR twice -->
-        <v-sheet class="mx-5" v-for="(chunk, pageIndex) in chunkArray(pr.items, 10)" :key="pageIndex">
-          <div v-if="pageIndex > 0" class="my-5" style="border-top: 2px dotted black; width: 100%; opacity: 1;"></div>
+    <body class="printable-page" v-for="(chunk, pageIndex) in chunkArray(pr.items, 10)" :key="pageIndex">
+      <div class="pa-2 pt-5">
+        <v-sheet class="mx-5">
+          <div v-for="n in 2" :key="n">
 
-          <div style="display: flex; align-items: stretch;">
-            <div
-              style="width: 60%; font-size: 24px; font-weight: bold; text-align: left; border: 2px solid black; padding: 20px;"
-              class="text-uppercase text-center">
-              Purchase Requisition Form
-            </div>
-            <div
-              style="width: 40%; text-align: right; border: 2px solid black; display: flex; align-items: center; justify-content: center;">
-              <v-img src="/hawkstow.png" />
-            </div>
-          </div>
-
-          <div style="display: flex;" class="mt-2">
-            <div style="width: 70%;">
-              <div style="display: flex; align-items: center;">
-                <div style="width: 15%;">Project</div>
-                <div style="width: 80%; display: flex; align-items: center;">
-                  : <input :value="pr.project" type="text"
-                    style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
-                </div>
+            <div style="display: flex; align-items: stretch;" :class="n === 2 ? 'mt-4' : 'mt-0'">
+              <div
+                style="width: 60%; font-size: 24px; font-weight: bold; text-align: left; border: 2px solid black; padding: 20px;"
+                class="text-uppercase text-center">
+                Purchase Requisition Form
               </div>
-              <div style="display: flex; align-items: center;">
-                <div style="width: 15%;">Location</div>
-                <div style="width: 80%; display: flex; align-items: center;">
-                  : <input :value="pr.address" type="text"
-                    style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
-                </div>
+              <div
+                style="width: 40%; text-align: right; border: 2px solid black; display: flex; align-items: center; justify-content: center;">
+                <v-img class="ma-2" src="/hawkstow.png" />
               </div>
             </div>
-            <div style="width: 25%;">
-              <div style="display: flex; align-items: center;">
-                <div style="width: 20%;">No</div>
-                <div style="width: 80%; display: flex; align-items: center;">
-                  : <input :value="pr.no" type="text"
-                    style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
+
+            <div style="display: flex;" class="mt-2">
+              <div style="width: 70%;">
+                <div style="display: flex; align-items: center;">
+                  <div style="width: 15%;">Project</div>
+                  <div style="width: 80%; display: flex; align-items: center;">
+                    : <input :value="pr.project" type="text"
+                      style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                  <div style="width: 15%;">Location</div>
+                  <div style="width: 80%; display: flex; align-items: center;">
+                    : <input :value="pr.address" type="text"
+                      style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
+                  </div>
                 </div>
               </div>
-              <div style="display: flex; align-items: center;">
-                <div style="width: 20%;">Date</div>
-                <div style="width: 80%; display: flex; align-items: center;">
-                  : <input :value="pr.date_requested" type="text"
-                    style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
+              <div style="width: 25%;">
+                <div style="display: flex; align-items: center;">
+                  <div style="width: 20%;">No</div>
+                  <div style="width: 80%; display: flex; align-items: center;">
+                    : <input :value="` PR-${pr.control_number}-${pr.no}`" type="text"
+                      style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                  <div style="width: 20%;">Date</div>
+                  <div style="width: 80%; display: flex; align-items: center;">
+                    : <input :value="formatDate(pr.date_requested)" type="text"
+                      style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <table class="mt-3">
-            <thead class="bg-grey-lighten-2">
-              <tr>
-                <th width="10%">Item No</th>
-                <th width="45%"> Description</th>
-                <th width="15%">Unit</th>
-                <th width="15%"> Quantity</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Loop twice for each pr -->
-              <tr v-for="(item, index) in chunk" :key="index">
-                <td>{{ pageIndex * 10 + index + 1 }}</td>
-                <td>{{ item.description || '' }}</td>
-                <td>{{ item.unit || '' }}</td>
-                <td>{{ item.quantity || '' }}</td>
-              </tr>
+            <table class="mt-3">
+              <thead class="bg-grey-lighten-2">
+                <tr>
+                  <th width="10%">Item No</th>
+                  <th width="45%"> Description</th>
+                  <th width="15%">Unit</th>
+                  <th width="15%"> Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Loop twice for each pr -->
+                <tr v-for="(item, index) in chunk" :key="index">
+                  <td>{{ pageIndex * 10 + index + 1 }}</td>
+                  <td>{{ item.description || '' }}</td>
+                  <td>{{ item.unit || '' }}</td>
+                  <td>{{ item.quantity || '' }}</td>
+                </tr>
 
-              <!-- Fill empty rows if chunk size is less than 10 -->
-              <tr v-for="n in (10 - chunk.length)" :key="'empty-' + n">
-                <td class="empty-row"> </td>
-                <td> </td>
-                <td> </td>
-                <td> </td>
-              </tr>
-            </tbody>
-          </table>
+                <!-- Fill empty rows if chunk size is less than 10 -->
+                <tr v-for="n in (10 - chunk.length)" :key="'empty-' + n">
+                  <td class="empty-row"> </td>
+                  <td> </td>
+                  <td> </td>
+                  <td> </td>
+                </tr>
+              </tbody>
+            </table>
 
-          <div class="d-flex mt-10">
-            <div class="w-50 pr-5">
-              <div class="font-weight-bold">REQUESTED BY:</div>
-              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;" class="text-uppercase text-center"> Marianne
-                Mae Paclian </div>
+            <div class="d-flex mt-10">
+              <div class="w-50 pr-5">
+                <div class="font-weight-bold">REQUESTED BY:</div>
+                <div style="border-bottom: 1px solid #ccc; margin-top: 7px;"
+                  class="text-uppercase text-center font-weight-bold">
+                  {{ pr.requested_by }} </div>
+              </div>
+              <div class="w-50">
+                <div class="font-weight-bold">APPROVED BY:</div>
+                <div style="border-bottom: 1px solid #ccc; margin-top: 7px;"
+                  class="text-uppercase text-center  font-weight-bold"> Grace
+                  Cruz </div>
+              </div>
             </div>
-            <div class="w-50">
-              <div class="font-weight-bold">APPROVED BY:</div>
-              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;" class="text-uppercase text-center"> Grace
-                Cruz </div>
-            </div>
-          </div>
 
-          <div class="d-flex mt-5">
-            <div class="w-33 footer-text">Doc. Ref.:HCD-QF-PUR-002</div>
-            <div class="w-33 text-center footer-text">Revision No.:00</div>
-            <div class="w-33 text-end footer-text">Effectivity Date: November 04, 2022</div>
+            <div class="d-flex mt-5">
+              <div class="w-33 footer-text">Doc. Ref.:HCD-QF-PUR-002</div>
+              <div class="w-33 text-center footer-text">Revision No.:00</div>
+              <div class="w-33 text-end footer-text">Effectivity Date: November 04, 2022</div>
+            </div>
           </div>
         </v-sheet>
       </div>
@@ -114,13 +117,19 @@
 
 <script lang="ts" setup>
 const router = useRouter();
+import { defineStore } from "pinia";
 import useAuth from "~/store/auth";
+import { usePurchaseOrder } from "~/store/purchasing";
 const { $rest } = useNuxtApp();
 const route = useRoute();
+const purchasingStore = usePurchaseOrder()
 
+const items = purchasingStore.items
 const purchaseData = computed(() => {
-  return route.query.result ? JSON.parse(route.query.result) : null;
+  return items;
 });
+
+
 
 function print() {
   window.print();
@@ -131,6 +140,28 @@ const chunkArray = (array: any[], size: number) => {
     array.slice(i * size, i * size + size)
   );
 };
+// function formatDate(date: any) {
+//   return new Date(date).toLocaleDateString()
+function formatDate(date: any): string {
+  const inputDate = new Date(date);
+  let resultDate = new Date(inputDate);
+
+
+  resultDate.setDate(inputDate.getDate() - 2);
+
+
+  let deductedDays = 2;
+  while (resultDate.getDay() === 6 || resultDate.getDay() === 0) {
+    resultDate.setDate(resultDate.getDate() - 1);
+    deductedDays += 1;
+
+    if (deductedDays === 4) break;
+  }
+
+  return resultDate.toLocaleDateString();
+}
+
+// }
 </script>
 
 <style scoped>

@@ -2,21 +2,21 @@
   <div>
 
 
-    <body class="printable-page" v-for="(pr, index) in purchaseData" :key="index">
+    <body class="printable-page" v-for="(po, index) in purchaseData" :key="index">
       <div class="pa-2 pt-5">
         <!-- Loop through the PR twice -->
-        <v-sheet class="mx-5" v-for="(chunk, pageIndex) in chunkArray(pr.items, 20)" :key="pageIndex">
+        <v-sheet class="mx-5" v-for="(chunk, pageIndex) in chunkArray(po.items, 20)" :key="pageIndex">
 
 
           <div style="display: flex; align-items: stretch;">
             <div
-              style="width: 60%; font-size: 24px; font-weight: bold; text-align: left; border: 2px solid black; padding: 20px;"
+              style="width: 60%; font-size: 34px; font-weight: bold; text-align: left; border: 2px solid black; padding: 25px;"
               class="text-uppercase text-center">
               Purchase ORDER
             </div>
             <div
               style="width: 40%; text-align: right; border: 2px solid black; display: flex; align-items: center; justify-content: center;">
-              <v-img src="/hawkstow.png" />
+              <v-img class="ma-2" src="/hawkstow.png" />
             </div>
           </div>
           <div style="display: flex;" class="mt-2">
@@ -38,14 +38,14 @@
               <div style="display: flex; align-items: center;" class="mt-10">
                 <div style="width: 15%;">Supplier</div>
                 <div style="width: 80%; display: flex; align-items: center;">
-                  : <input type="text" style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);"
-                    disabled>
+                  : <input :value="po.supplier" type="text"
+                    style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
                 </div>
               </div>
               <div style="display: flex; align-items: center;">
                 <div style="width: 15%;">Ship to</div>
                 <div style="width: 80%; display: flex; align-items: center;">
-                  : <input :value="pr.project" type="text"
+                  : <input :value="po.project" type="text"
                     style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
                 </div>
               </div>
@@ -54,14 +54,14 @@
               <div style="display: flex; align-items: center;">
                 <div style="width: 40%; font-size: 11px;">Purchase No.</div>
                 <div style="width: 60%; display: flex; align-items: center;">
-                  : <input :value="pr.no" type="text"
+                  : <input :value="` PO-${po.control_number}-${po.no}`" type="text"
                     style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
                 </div>
               </div>
               <div style="display: flex; align-items: center;">
                 <div style="width: 40%;">Date</div>
                 <div style="width: 60%; display: flex; align-items: center;">
-                  : <input :value="pr.date_requested" type="text"
+                  : <input :value="formatDate(po.date_requested)" type="text"
                     style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
                 </div>
               </div>
@@ -121,10 +121,10 @@
               <tr v-for="(item, index) in chunk" :key="index">
                 <td class="text-center">{{ pageIndex * 20 + index + 1 }}</td>
                 <td>{{ item.description || '' }}</td>
-                <td>{{ item.unit || '' }}</td>
-                <td>{{ item.quantity || '' }}</td>
-                <td> {{ Number(item.cost).toFixed(2) }}</td>
-                <td>{{ (Number(item.quantity) * Number(item.cost)).toFixed(2) }}</td>
+                <td class="text-center">{{ item.unit || '' }}</td>
+                <td class="text-center">{{ item.quantity || '' }}</td>
+                <td class="text-end"> {{ Number(item.cost).toFixed(2) }}</td>
+                <td class="text-end">{{ (Number(item.quantity) * Number(item.cost)).toFixed(2) }}</td>
 
 
               </tr>
@@ -145,7 +145,8 @@
           <div class="d-flex justify-end align-items-center mt-2">
             <span class="">TOTAL :</span>
             <div class="font-weight-bold" style="min-width: 12%; text-align: end;">
-              ₱ {{ totalCost }}
+              ₱ {{ getTotalPerPO(po.items).toFixed(2) }}
+
             </div>
           </div>
 
@@ -153,8 +154,8 @@
           <div class="d-flex mt-10">
             <div class="w-50 pr-5">
               <div class="font-weight-bold">Processed by:</div>
-              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;" class="text-uppercase text-center"> Marianne
-                Mae Paclian </div>
+              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;" class="text-uppercase text-center"> Benjie
+                Benejol </div>
             </div>
             <div class="w-50">
               <div class="font-weight-bold">Approved by:</div>
@@ -163,7 +164,7 @@
             </div>
           </div>
 
-          <div class="d-flex mt-5">
+          <div class="d-flex mt-5" style="padding-top: 225px;">
             <div class="w-33 footer-text">Doc. Ref.:HCD-QF-PUR-004</div>
             <div class="w-33 text-center footer-text">Revision No.:00</div>
             <div class="w-33 text-end footer-text">Effectivity Date: November 04, 2022</div>
@@ -182,12 +183,16 @@
 
 <script lang="ts" setup>
 const router = useRouter();
+import { defineStore } from "pinia";
 import useAuth from "~/store/auth";
+import { usePurchaseOrder } from "~/store/purchasing";
 const { $rest } = useNuxtApp();
 const route = useRoute();
+const purchasingStore = usePurchaseOrder()
 
+const items = purchasingStore.items
 const purchaseData = computed(() => {
-  return route.query.result ? JSON.parse(route.query.result) : null;
+  return items;
 });
 
 function print() {
@@ -199,23 +204,37 @@ const chunkArray = (array: any[], size: number) => {
     array.slice(i * size, i * size + size)
   );
 };
+
+function getTotalPerPO(items: any[]) {
+  return items.reduce((sum, item) => {
+    const quantity = Number(item.quantity) || 0;
+    const cost = Number(item.cost) || 0;
+    return sum + quantity * cost;
+  }, 0);
+}
 const totalCost = computed(() => {
   if (!Array.isArray(purchaseData.value)) return 0;
 
   return purchaseData.value.reduce((total, request) => {
+    console.log('TotALLLLLLL', total);
+
+    console.log('TotALLLLLLL', request);
     if (!Array.isArray(request.items)) return total;
 
     const requestTotal = request.items.reduce((sum, item) => {
       const quantity = parseFloat(item.quantity) || 0;
       const cost = parseFloat(item.cost) || 0;
-
+      console.log('TotALLLLLLL', quantity);
+      console.log('TotALLLLLLL', cost);
       return sum + quantity * cost;
     }, 0);
 
     return Number(total + requestTotal).toFixed(2);
   }, 0);
 });
-
+function formatDate(date: any) {
+  return new Date(date).toLocaleDateString()
+}
 </script>
 
 <style scoped>

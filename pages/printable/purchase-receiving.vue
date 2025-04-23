@@ -32,8 +32,8 @@
               <div style="display: flex; align-items: center;">
                 <div style="width: 15%;">Supplier</div>
                 <div style="width: 80%; display: flex; align-items: center;">
-                  : <input type="text" style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);"
-                    disabled>
+                  : <input :value="pr.supplier" type="text"
+                    style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
                 </div>
               </div>
 
@@ -42,14 +42,14 @@
               <div style="display: flex; align-items: center;">
                 <div style="width: 40%; font-size: 11px;">MRR No.</div>
                 <div style="width: 60%; display: flex; align-items: center;">
-                  : <input :value="pr.no" type="text"
+                  : <input :value="` MRR-${pr.control_number}-${pr.no}`" type="text"
                     style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
                 </div>
               </div>
               <div style="display: flex; align-items: center;">
                 <div style="width: 40%;">Date</div>
                 <div style="width: 60%; display: flex; align-items: center;">
-                  : <input :value="pr.date_requested" type="text"
+                  : <input :value="formatDate(pr.date_requested)" type="text"
                     style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
                 </div>
               </div>
@@ -75,7 +75,7 @@
                 <td>{{ item.description || '' }}</td>
                 <td>{{ item.unit || '' }}</td>
                 <td>{{ item.quantity || '' }}</td>
-                <td></td>
+                <td> Good Condition</td>
               </tr>
               <tr v-for="n in (20 - chunk.length)" :key="'empty-' + n">
                 <td class="empty-row"> </td>
@@ -94,17 +94,19 @@
           <div class="d-flex mt-10">
             <div class="w-50 pr-5">
               <div class="font-weight-bold">Delivered by:</div>
-              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;" class="text-uppercase text-center"> Marianne
-                Mae Paclian </div>
+              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;"
+                class="text-uppercase text-center font-weight-bold"> {{ pr.delivery ? pr.supplier : 'JOEL BERUELA' }}
+              </div>
             </div>
             <div class="w-50">
               <div class="font-weight-bold">Prepared & Received by:</div>
-              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;" class="text-uppercase text-center"> Grace
-                Cruz </div>
+              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;"
+                class="text-uppercase text-center font-weight-bold">
+                JUPITER ALIPAN </div>
             </div>
           </div>
 
-          <div class="d-flex mt-5">
+          <div class="d-flex mt-5" style="padding-top: 290px;">
             <div class="w-33 footer-text">Doc. Ref.:HCD-QF-PUR-009</div>
             <div class="w-33 text-center footer-text">Revision No.:00</div>
             <div class="w-33 text-end footer-text">Effectivity Date: November 04, 2022</div>
@@ -124,13 +126,15 @@
 <script lang="ts" setup>
 const router = useRouter();
 import useAuth from "~/store/auth";
+import { usePurchaseOrder } from "~/store/purchasing";
 const { $rest } = useNuxtApp();
+const purchasingStore = usePurchaseOrder()
 const route = useRoute();
 
+const items = purchasingStore.items
 const purchaseData = computed(() => {
-  return route.query.result ? JSON.parse(route.query.result) : null;
+  return items;
 });
-
 function print() {
   window.print();
 }
@@ -156,6 +160,10 @@ const totalCost = computed(() => {
     return Number(total + requestTotal).toFixed(2);
   }, 0);
 });
+
+function formatDate(date: any) {
+  return new Date(date).toLocaleDateString()
+}
 
 </script>
 

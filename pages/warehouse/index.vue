@@ -5,7 +5,7 @@
       <template v-slot:title>
         <v-row dense>
           <v-col cols="12">
-            <h2 class="font-weight-medium text-primary">Summary of Purchase Requisition</h2>
+            <h2 class="font-weight-medium text-primary">Warehouse Inventory</h2>
             <small class="font-weight-thin" style="color: #B1D182;">
               Overview of external providers items and services
             </small>
@@ -13,6 +13,10 @@
         </v-row>
       </template>
       <v-spacer></v-spacer>
+      <v-btn @click="add_tool_dialog = true">
+        <v-icon class="pr-3" color="#228B22">mdi-hammer</v-icon>
+        Add new Tool
+      </v-btn>
       <v-btn>
         <v-icon class="pr-3" color="#228B22">mdi-database</v-icon>
         import
@@ -27,39 +31,35 @@
           <v-card-text class="mt-8">
             <v-row dense>
               <v-col cols="12">
-
-                <v-select class="mb-2" v-model="searchData.project" label="Project" :items="project_data"
-                  item-title="name" item-value="_id" density="compact" variant="outlined" hide-details clearable />
-                <v-select class="mb-2" v-model="searchData.type" label="Request type" :items="print_items"
-                  item-title="text" item-value="value" density="compact" variant="outlined" hide-details clearable />
-
-                <v-text-field class="mb-2" v-if="searchData.type === 'stock-card'" v-model="searchData.year"
-                  label="Year & Month" type="month" density="compact" variant="outlined" hide-details clearable />
-
+                <v-select class="mb-2" :items="['2025']" label="Year" outlined hide-details clearable></v-select>
+                <v-select class="mb-2" label="Project" :items="project_data" item-title="name" item-value="_id"
+                  density="compact" variant="outlined" hide-details clearable />
+                <v-select label="Request type" :items="print_items" item-title="text" item-value="value"
+                  density="compact" variant="outlined" hide-details clearable />
               </v-col>
 
               <v-col cols="12">
-                <v-btn block color="success" class="white--text" @click="get_purchase_request">
+                <v-btn block color="success" class="white--text">
                   Filter
                 </v-btn>
               </v-col>
               <v-col cols="12">
-                <v-btn block color="blue darken-4" @click="print_result(searchData.type)" class="white--text">
+                <v-btn block color="blue darken-4" class="white--text">
                   Print
                 </v-btn>
               </v-col>
               <v-col cols="12">
-                <v-btn block color="amber" @click="purchase_request_dialog = true">
+                <v-btn block color="amber" @click="add_tool_dialog = true">
                   Create
                 </v-btn>
               </v-col>
 
-            </v-row></v-card-text>
+            </v-row>
+          </v-card-text>
         </v-sheet>
         <v-sheet border width="80%" height="80vh">
-
-          <commons-sms title="Summary of Purchase Requisition" icon="mdi-note-text-outline"
-            :items="purchase_request_data" :display_types="['grid', 'table']">
+          <commons-sms title="Summary of Tools" icon="mdi-note-text-outline" :items="purchase_request_data"
+            :display_types="['grid', 'table']">
 
             <template v-slot:table="{ items }">
               <v-card-text border style="max-height: 80vh; overflow-y: auto;">
@@ -90,7 +90,7 @@
                   <v-row no-gutters>
 
                     <v-col cols="6"> Date Requested : <b>{{ new Date(value.date_requested).toDateString()
-                        }}</b></v-col>
+                    }}</b></v-col>
                     <v-col cols="6" class="text-end align-end"> PR No. : <v-chip density="compact" class="text-caption"
                         color="amber" variant="tonal">
                         {{ value.no }} </v-chip></v-col>
@@ -155,121 +155,50 @@
     </v-row>
 
 
-    <commons-dialog v-model="purchase_request_dialog" max-width="50%" icon="mdi-school"
-      title="Purchase Requisition Slip" submitText="Submit" @submit="create_purchase_requisition">
+    <commons-dialog v-model="add_tool_dialog" max-width="600px" icon="mdi-school" title="Add Tool Slip"
+      submitText="Submit">
       <v-card-text style="max-height: 70vh; overflow-y: auto;">
         <v-row dense>
-          <!-- Left Panel: Add Item Section -->
           <v-col cols="12">
             <v-card flat>
               <v-card-text>
                 <v-row dense>
+                  <v-col cols="12"> <v-checkbox label="Check if borrowed item"></v-checkbox></v-col>
+                  <!-- Project Selection -->
                   <v-col cols="12">
-                    <v-select v-model="pr.project" label="Project" :items="project_data" item-title="name"
-                      item-value="_id" density="compact" variant="outlined" hide-details />
+                    <v-select v-model="tool.project" :items="project_data" item-title="name" item-value="_id"
+                      label="Select Project" variant="outlined" density="comfortable" hide-details
+                      prepend-icon="mdi-briefcase-outline" />
                   </v-col>
 
-                  <v-col cols="12" v-if="pr.project" class="py-2">
-                    <v-icon color="blue">mdi-map-marker</v-icon> {{(project_data.find(p => p?._id === pr.project) ||
-                      {}).address ||
-                      ''}}
+                  <!-- Tool Details -->
+                  <v-col cols="12" md="6">
+                    <v-text-field v-model="tool.name" label="Item/Tool Name" variant="outlined" density="comfortable"
+                      prepend-icon="mdi-hammer" />
                   </v-col>
 
-                  <v-col cols="12"> <v-select v-model="pr.supplier" label="Supplier" :items="supplier_data"
-                      item-title="name" item-value="_id" density="compact" variant="outlined" hide-details /></v-col>
-                  <v-col cols="12">
-                    <v-text-field v-model="pr.requested_by" label="Requested by" density="compact" variant="outlined"
-                      hide-details />
+                  <v-col cols="12" md="6">
+                    <v-text-field v-model="tool.serial" label="Serial Number" variant="outlined" density="comfortable"
+                      prepend-icon="mdi-barcode" />
                   </v-col>
-                  <v-col cols="6">
-                    <v-text-field v-model="pr.type" label=" Delivery Receipt/Invoice Number" density="compact"
-                      variant="outlined" hide-details />
-                  </v-col>
-                  <v-col cols="6">
-                    <v-text-field v-model="pr.date_requested" label="Date Requested" type="date" density="compact"
-                      variant="outlined" hide-details />
-                  </v-col>
-                  <v-col cols="4">
-                    <v-checkbox v-model="pr.delivery" color="primary" label="Mark if for Pick-up" hide-details
-                      density="comfortable" inset />
-
-
-                  </v-col>
-
-                  <v-divider class="my-3"></v-divider>
-                  <!-- Heading for Item Details Section -->
-                  <h4 class="mb-2 text-primary font-weight-bold">Item Details</h4>
 
                   <v-col cols="12">
-                    <v-textarea v-model="newItem.description" rows="2" label="Item Description" density="compact"
-                      variant="outlined" hide-details />
+                    <v-textarea v-model="tool.description" label="Description" variant="outlined" density="comfortable"
+                      auto-grow rows="2" prepend-icon="mdi-text" />
                   </v-col>
 
-                  <v-col cols="3">
-                    <v-combobox v-model="newItem.unit" :items="unitOptions" label="Unit" density="compact"
-                      variant="outlined" hide-details />
-                  </v-col>
-                  <v-col cols="3">
-                    <v-text-field v-model="newItem.quantity" type="number" label="Quantity" density="compact"
-                      variant="outlined" hide-details />
-                  </v-col>
-
-                  <v-col cols="3">
-                    <v-text-field v-model="newItem.cost" type="number" label="Cost" density="compact" variant="outlined"
-                      hide-details />
-                  </v-col>
-
-                  <!-- Add Item Button -->
-                  <v-col cols="3">
-                    <v-btn block color="primary" variant="tonal" prepend-icon="mdi-plus" class="my-1 py-2 rounded-lg"
-                      @click="addItem">
-                      Add Item
-                    </v-btn>
+                  <v-col cols="12">
+                    <v-textarea v-model="tool.remarks" label="Remarks" variant="outlined" density="comfortable"
+                      auto-grow rows="2" prepend-icon="mdi-note-outline" />
                   </v-col>
                 </v-row>
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <!-- Right Panel: Display Added Items -->
-          <v-col cols="12" v-if="pr.items.length">
-            <v-card class="elevation-1">
-              <v-card-text>
-                <!-- Heading for Added Items -->
-                <h4 class="mb-2 text-primary font-weight-bold">Added Items</h4>
-                <v-divider class="my-2"></v-divider>
-
-                <v-table density="compact">
-                  <thead class="bg-green-lighten-3 text-white">
-                    <tr>
-                      <th class="text-left px-3">Action</th>
-                      <th class="text-left px-3">Description</th>
-                      <th class="text-left px-3">Unit</th>
-                      <th class="text-left px-3">Quantity</th>
-                      <th class="text-left px-3">Cost</th>
-                      <th class="text-left px-3">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(item, index) in pr.items" :key="index" class="hover:bg-grey-lighten-3">
-                      <td class="px-3">
-                        <v-btn icon="mdi-delete" color="error" variant="text"
-                          class="hover:scale-110 transition-transform" @click="removeItem(index)" />
-                      </td>
-                      <td class="px-3">{{ item.description }}</td>
-                      <td class="px-3">{{ item.unit }}</td>
-                      <td class="px-3">{{ item.quantity }}</td>
-                      <td class="px-3">₱{{ Number(item.cost).toLocaleString() }}</td>
-                      <td class="px-3">₱{{ (item.quantity * item.cost).toLocaleString() }}</td>
-                    </tr>
-                  </tbody>
-                </v-table>
               </v-card-text>
             </v-card>
           </v-col>
         </v-row>
       </v-card-text>
     </commons-dialog>
+
 
 
 
@@ -310,57 +239,26 @@ const purchase_request_header = ref([
   { title: "Actions", key: "actions", sortable: false, align: "center" },
 ])
 
-interface SearchData {
+
+interface Tools {
   project: string;
-  type: string;
-  year: string;
-}
-interface PR {
-  project: string;
-  requested_by: string;
-  date_requested: string;
-  type: string;
-  supplier: string;
-  items: {
-    description: string;
-    unit: string;
-    quantity: number | null;
-    cost: number | null;
-  }[];
-  delivery: boolean
+  name: string;
+  serial: string;
+  description: string;
+  remarks: string;
+
 }
 
-const searchData = ref<SearchData>({
-  project: "",
-  type: "",
-  year: ""
+const tool = ref<Tools>({
+  project: '',
+  name: '',
+  serial: '',
+  description: '',
+  remarks: '',
 });
-const pr = ref<PR>({
-  project: "",
-  requested_by: "",
-  date_requested: "",
-  supplier: "",
-  items: [],
-  type: "",
-  delivery: false
-});
-const purchase_request_dialog = ref(false)
+const add_tool_dialog = ref(false)
 
-const newItem = ref({
-  description: "",
-  unit: "",
-  quantity: null,
-  cost: null,
-});
 
-const addItem = () => {
-  if (newItem.value.description && newItem.value.unit && newItem.value.quantity && newItem.value.cost) {
-    pr.value.items.push({ ...newItem.value });
-    newItem.value = { description: "", unit: "", quantity: null, cost: null };
-  }
-};
-
-const unitOptions = ref(["pcs", "roll", "kilo", "meter", "box", "liters"]);
 
 async function create_purchase_requisition() {
   const { data, error } = await $rest('purchasing/create-purchase-request', {
@@ -373,21 +271,18 @@ async function create_purchase_requisition() {
 
   pr.value = { project: "", type: "", requested_by: "", items: [] };
   get_purchase_request()
-  purchase_request_dialog.value = false;
+  add_tool_dialog.value = false;
 }
 
 const purchase_request_data = ref([]);
 
 async function get_purchase_request() {
   const payload = {};
-  if (searchData?.value?.project) {
-    payload.project = searchData.value.project;
+  if (pr?.value?.project) {
+    payload.project = pr.value.project;
   }
-  if (searchData?.value?.type) {
-    payload.type = searchData.value.type;
-  }
-  if (searchData?.value?.year) {
-    payload.year = searchData.value.year;
+  if (pr?.value?.type) {
+    payload.type = pr.value.type;
   }
   console.log("Payloadddd", payload);
 
@@ -411,17 +306,10 @@ const print_result = (type: string) => {
   console.log("purchasingStore", purchasingStore);
 
   purchasingStore.putData(result)
-  if (type === 'stock-card') {
-    router.push({
-      name: `warehouse-${type}`
-    })
-  } else {
 
-    router.push({
-      name: `printable-${type}`
-    })
-  }
-
+  router.push({
+    name: `printable-${type}`
+  })
 }
 
 const pr_data = ref([])
@@ -458,21 +346,13 @@ async function get_supplier() {
 
 const print_items = ref([
   {
-    text: "Purchase Requisition",
+    text: "Material Requisition",
     value: "purchase-request"
 
   },
   {
-    text: "Purchase Order",
-    value: "purchase-order"
-  },
-  {
-    text: "Material Receiving",
-    value: "purchase-receiving"
-  },
-  {
     text: "Stock Card",
-    value: "stock-card"
+    value: "purchase-order"
   }
 ])
 const menu_items = ref([
@@ -494,7 +374,6 @@ const menu_items = ref([
     value: "purchase-receiving",
     icon: "mdi-package-variant-closed"
   }
-
 ]);
 
 

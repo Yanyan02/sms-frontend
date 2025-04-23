@@ -15,11 +15,7 @@
                     <v-icon class="mr-2 text-primary">mdi-folder-cog</v-icon>
                     <span class="text-body-1 font-weight-medium">{{ value.name }}</span>
                   </div>
-                  <v-spacer />
-                  <v-chip density="comfortable" class="text-uppercase text-overline font-weight-bold"
-                    :color="value.status === 'pending' ? 'error' : 'success'">
-                    {{ value.status }}
-                  </v-chip>
+
                 </div>
 
                 <div class="d-flex align-center mb-1">
