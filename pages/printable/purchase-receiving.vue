@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div v-for="(pr, index) in purchaseData" :key="index">
 
 
-    <body class="printable-page" v-for="(pr, index) in purchaseData" :key="index">
+    <body class="printable-page" v-for="(chunk, pageIndex) in chunkArray(pr.items, 15)" :key="pageIndex">
       <div class="pa-2 pt-5">
         <!-- Loop through the PR twice -->
-        <v-sheet class="mx-5" v-for="(chunk, pageIndex) in chunkArray(pr.items, 15)" :key="pageIndex">
+        <v-sheet class="mx-5">
 
           <div style="display: flex; align-items: stretch;">
             <div
@@ -102,7 +102,7 @@
               <div class="font-weight-bold">Prepared & Received by:</div>
               <div style="border-bottom: 1px solid #ccc; margin-top: 7px;"
                 class="text-uppercase text-center font-weight-bold">
-                JUPITER ALIPAN </div>
+                CHRISTIAN JOHN JABONETE </div>
             </div>
           </div>
 

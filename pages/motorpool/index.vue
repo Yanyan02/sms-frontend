@@ -59,93 +59,9 @@
         </v-sheet>
         <v-sheet border width="80%" height="80vh">
           <commons-sms title="Summary of Vehicles & Heavy Equipment" icon="mdi-note-text-outline"
-            :items="purchase_request_data" :display_types="['grid', 'table']">
+            :display_types="['grid', 'table']">
 
-            <template v-slot:table="{ items }">
-              <v-card-text border style="max-height: 80vh; overflow-y: auto;">
-                <v-data-table :items="purchase_request_data" :headers="purchase_request_header">
-                  <template v-slot:item.no="{ item }">
-                    <v-chip density="compact" class="text-caption" color="amber" variant="tonal">
-                      {{ item.selectable.no }} </v-chip>
-                  </template>
-                  <template v-slot:item.date_requested="{ item }">
-                    <span class="text-success">{{ new Date(item.selectable.date_requested).toDateString()
-                    }}</span>
-                  </template>
-                  <template v-slot:item.items="{ item }">
-                    <v-chip size="small" color="info">
-                      {{ item.selectable.items.length }} item(s)
-                    </v-chip>
 
-                  </template>
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn density="compact" color="primary">Actions</v-btn>
-                  </template>
-                </v-data-table>
-              </v-card-text>
-            </template>
-            <template v-slot:item="{ value, index, display }">
-              <v-card class="mx-auto" rounded="lg" color="primary" variant="tonal">
-                <v-card-text>
-                  <v-row no-gutters>
-
-                    <v-col cols="6"> Date Requested : <b>{{ new Date(value.date_requested).toDateString()
-                    }}</b></v-col>
-                    <v-col cols="6" class="text-end align-end"> PR No. : <v-chip density="compact" class="text-caption"
-                        color="amber" variant="tonal">
-                        {{ value.no }} </v-chip></v-col>
-                    <v-col cols="12"> Requested by : <b>{{ value.requested_by }}</b></v-col>
-                    <v-col cols="12"> <v-divider class="my-2"></v-divider> </v-col>
-
-                    <v-col cols="12"> <v-icon class="mr-2 text-primary">mdi-folder-cog</v-icon> {{
-                      value.project
-                    }}</v-col>
-                    <v-col cols="12"> <v-icon class="mr-2 text-blue">mdi-map-marker</v-icon>{{ value.address
-                    }}</v-col>
-                    <v-col cols="12" class="d-flex align-center justify-space-between">
-                      <div class="d-flex align-center">
-                        <v-icon class="mr-2 text-orange">mdi-cart</v-icon>
-                        <v-chip size="small" color="info">
-                          {{ value.items.length }} item(s)
-                        </v-chip>
-                      </div>
-
-                      <v-menu :close-on-content-click="false" location="end">
-                        <template v-slot:activator="{ props }">
-                          <v-btn v-bind="props" density="compact" color="primary" @click="get_pr(value._id)"> Manage
-                          </v-btn>
-                        </template>
-                        <v-card min-width="300">
-                          <v-list>
-                            <v-list-item title="Manage Purchasing">
-                              <template v-slot:append>
-                                <v-icon color="green darken-4" size="24">mdi-cart</v-icon>
-                              </template>
-                            </v-list-item>
-                          </v-list>
-                          <v-divider></v-divider>
-                          <v-list lines="two" class="elevation-1" density="compact">
-
-                            <v-list-item v-for="item in menu_items" :key="item.value" :title="item.text"
-                              :subtitle="item.subtitle" @click="print_request(item.value)">
-                              <template v-slot:prepend>
-                                <v-icon :color="'primary'" :size="22">{{ item.icon }}</v-icon>
-                              </template>
-                            </v-list-item>
-
-                          </v-list>
-                          <v-card-actions>
-                            <v-spacer />
-                            <v-btn variant="text" color="error">Close</v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-menu>
-                    </v-col>
-
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </template>
           </commons-sms>
         </v-sheet>
       </v-col>
@@ -155,7 +71,7 @@
     </v-row>
 
     <commons-dialog v-model="vehicle_dialog" max-width="50%" icon="mdi-car" title="Vehicle/Heavy Equipment Info"
-      submitText="Submit" @submit="create_vehicle_info">
+      submitText="Submit" @submit="create_vehicle">
       <v-card-text style="max-height: 70vh; overflow-y: auto;">
 
         <v-row dense>
@@ -233,8 +149,8 @@ const router = useRouter();
 
 onBeforeMount(() => {
   Promise.all([
-    // get_project(),
-    // get_supplier(),
+    get_project(),
+    get_supplier(),
     // get_purchase_request(),
 
 
@@ -286,19 +202,17 @@ const vehicle_dialog = ref(false)
 
 
 
-// async function create_purchase_requisition() {
-//   const { data, error } = await $rest('purchasing/create-purchase-request', {
-//     method: "POST",
-//     body: { ...pr.value }
-//   });
-//   if (error) return swal({ title: "Error", text: error, icon: "error", buttons: false });
+async function create_vehicle() {
+  const { data, error } = await $rest('purchasing/create-purchase-request', {
+    method: "POST",
+    body: { ...pr.value }
+  });
+  if (error) return swal({ title: "Error", text: error, icon: "error", buttons: false });
 
-//   swal({ title: "Success", text: data, icon: "success", buttons: false });
+  swal({ title: "Success", text: data, icon: "success", buttons: false });
 
-//   pr.value = { project: "", type: "", requested_by: "", items: [] };
-//   get_purchase_request()
-//   vehicle_dialog.value = false;
-// }
+  vehicle_dialog.value = false;
+}
 
 // const purchase_request_data = ref([]);
 
@@ -321,86 +235,19 @@ const vehicle_dialog = ref(false)
 // }
 
 
-// const project_data = ref([])
-// async function get_project() {
-//   const { data } = await $rest('projects/get-project', { method: "GET" });
-//   project_data.value = data;
-// }
-
-// const print_result = (type: string) => {
-//   const result = purchase_request_data.value
-//   console.log("purchasingStore", purchasingStore);
-
-//   purchasingStore.putData(result)
-
-//   router.push({
-//     name: `printable-${type}`
-//   })
-// }
-
-// const pr_data = ref([])
-// async function get_pr(id: any) {
-//   const { data, error } = await $rest('purchasing/get-purchase-request-id', {
-//     method: "GET",
-//     query: { id: id }
-//   });
-//   pr_data.value = data
-// }
-
-// const print_request = (type: string) => {
-//   if (pr_data.value.length === 0) return swal({ text: "No data found!", icon: "error" });
-
-//   const result = pr_data.value;
-//   purchasingStore.putData(result);
-
-//   router.push({
-//     name: `printable-${type}`,
-//     query: {
-//       result: JSON.stringify(result)
-//     }
-//   });
-// }
+const project_data = ref([])
+async function get_project() {
+  const { data } = await $rest('projects/get-project', { method: "GET" });
+  project_data.value = data;
+}
 
 
 
-// const supplier_data = ref([])
-// async function get_supplier() {
-//   const { data } = await $rest('supplier/get-supplier', { method: "GET" });
-//   supplier_data.value = data;
-// }
-
-
-// const print_items = ref([
-//   {
-//     text: "Material Requisition",
-//     value: "purchase-request"
-
-//   },
-//   {
-//     text: "Stock Card",
-//     value: "purchase-order"
-//   }
-// ])
-// const menu_items = ref([
-//   {
-//     text: "Purchase Requisition",
-//     subtitle: "Print & View PR",
-//     value: "purchase-request",
-//     icon: "mdi-file-document"
-//   },
-//   {
-//     text: "Purchase Order",
-//     subtitle: "Print & View PO",
-//     value: "purchase-order",
-//     icon: "mdi-cart"
-//   },
-//   {
-//     text: "Material Receiving",
-//     subtitle: "Print & View Receiving",
-//     value: "purchase-receiving",
-//     icon: "mdi-package-variant-closed"
-//   }
-// ]);
+const supplier_data = ref([])
+async function get_supplier() {
+  const { data } = await $rest('supplier/get-supplier', { method: "GET" });
+  supplier_data.value = data;
+}
 
 
 </script>

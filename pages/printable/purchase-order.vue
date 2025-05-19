@@ -1,11 +1,12 @@
 <template>
-  <div>
+  <div v-for="(po, index) in purchaseData" :key="index">
 
 
-    <body class="printable-page" v-for="(po, index) in purchaseData" :key="index">
+    <body class="printable-page" v-for="(chunk, pageIndex) in chunkArray(po.items, 20)" :key="`${index}-${pageIndex}`">
       <div class="pa-2 pt-5">
         <!-- Loop through the PR twice -->
-        <v-sheet class="mx-5" v-for="(chunk, pageIndex) in chunkArray(po.items, 20)" :key="pageIndex">
+        <v-sheet>
+
 
 
           <div style="display: flex; align-items: stretch;">
@@ -54,7 +55,7 @@
               <div style="display: flex; align-items: center;">
                 <div style="width: 40%; font-size: 11px;">Purchase No.</div>
                 <div style="width: 60%; display: flex; align-items: center;">
-                  : <input :value="` PO-${po.control_number}-${po.no}`" type="text"
+                  : <input :value="` PO-${po.control_number}-${index + 1}`" type="text"
                     style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
                 </div>
               </div>
@@ -117,7 +118,7 @@
               </tr>
             </thead>
             <tbody>
-              <!-- Loop twice for each pr -->
+
               <tr v-for="(item, index) in chunk" :key="index">
                 <td class="text-center">{{ pageIndex * 20 + index + 1 }}</td>
                 <td>{{ item.description || '' }}</td>
@@ -129,7 +130,7 @@
 
               </tr>
 
-              <!-- Fill empty rows if chunk size is less than 10 -->
+
               <tr v-for="n in (20 - chunk.length)" :key="'empty-' + n">
                 <td class="empty-row"> </td>
                 <td> </td>
@@ -152,19 +153,33 @@
 
 
           <div class="d-flex mt-10">
+            <!-- Processed by -->
             <div class="w-50 pr-5">
-              <div class="font-weight-bold">Processed by:</div>
-              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;" class="text-uppercase text-center"> Benjie
-                Benejol </div>
+              <div class="font-weight-bold mb-2">Processed by:</div>
+              <v-sheet flat class="d-flex justify-center" style="margin-bottom: -12mm;">
+                <v-img class="ma-0 pa-0" width="350" height="120" src="/tatay_benjie.png" contain />
+              </v-sheet>
+              <div
+                style="border-bottom: 1px solid #ccc; margin-top: 7px; text-transform: uppercase; text-align: center;">
+                Benjie Benejol
+              </div>
             </div>
+
+            <!-- Approved by -->
             <div class="w-50">
-              <div class="font-weight-bold">Approved by:</div>
-              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;" class="text-uppercase text-center"> Grace
-                Cruz </div>
+              <div class="font-weight-bold mb-2">Approved by:</div>
+              <v-sheet flat class="d-flex justify-center" style="margin-bottom: -12mm;">
+                <v-img class="ma-0 pa-0" width="350" height="120" src="/mam_bing_signature.png" contain />
+              </v-sheet>
+              <div
+                style="border-bottom: 1px solid #ccc; margin-top: 7px; text-transform: uppercase; text-align: center;">
+                Grace Cruz
+              </div>
             </div>
           </div>
 
-          <div class="d-flex mt-5" style="padding-top: 225px;">
+
+          <div class="d-flex mt-5" style="padding-top: 100px;">
             <div class="w-33 footer-text">Doc. Ref.:HCD-QF-PUR-004</div>
             <div class="w-33 text-center footer-text">Revision No.:00</div>
             <div class="w-33 text-end footer-text">Effectivity Date: November 04, 2022</div>
@@ -192,18 +207,22 @@ const purchasingStore = usePurchaseOrder()
 
 const items = purchasingStore.items
 const purchaseData = computed(() => {
-  return items;
+  return [...items].sort((a, b) => new Date(a.date_requested).getTime() - new Date(b.date_requested).getTime());
 });
+
+
 
 function print() {
   window.print();
 }
 
-const chunkArray = (array: any[], size: number) => {
-  return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
-    array.slice(i * size, i * size + size)
-  );
-};
+function chunkArray(arr: any, chunkSize: any) {
+  const chunks = []
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    chunks.push(arr.slice(i, i + chunkSize))
+  }
+  return chunks
+}
 
 function getTotalPerPO(items: any[]) {
   return items.reduce((sum, item) => {
@@ -212,26 +231,7 @@ function getTotalPerPO(items: any[]) {
     return sum + quantity * cost;
   }, 0);
 }
-const totalCost = computed(() => {
-  if (!Array.isArray(purchaseData.value)) return 0;
 
-  return purchaseData.value.reduce((total, request) => {
-    console.log('TotALLLLLLL', total);
-
-    console.log('TotALLLLLLL', request);
-    if (!Array.isArray(request.items)) return total;
-
-    const requestTotal = request.items.reduce((sum, item) => {
-      const quantity = parseFloat(item.quantity) || 0;
-      const cost = parseFloat(item.cost) || 0;
-      console.log('TotALLLLLLL', quantity);
-      console.log('TotALLLLLLL', cost);
-      return sum + quantity * cost;
-    }, 0);
-
-    return Number(total + requestTotal).toFixed(2);
-  }, 0);
-});
 function formatDate(date: any) {
   return new Date(date).toLocaleDateString()
 }

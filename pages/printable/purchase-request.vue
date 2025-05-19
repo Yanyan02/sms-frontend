@@ -1,6 +1,6 @@
 <template>
   <div v-for="(pr, index) in purchaseData" :key="index">
-    {{ purchaseData.length }}
+
 
     <body class="printable-page" v-for="(chunk, pageIndex) in chunkArray(pr.items, 10)" :key="pageIndex">
       <div class="pa-2 pt-5">
@@ -40,7 +40,7 @@
                 <div style="display: flex; align-items: center;">
                   <div style="width: 20%;">No</div>
                   <div style="width: 80%; display: flex; align-items: center;">
-                    : <input :value="` PR-${pr.control_number}-${pr.no}`" type="text"
+                    : <input :value="` PR-${pr.control_number}-${index + 1}`" type="text"
                       style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
                   </div>
                 </div>
@@ -66,10 +66,10 @@
               <tbody>
                 <!-- Loop twice for each pr -->
                 <tr v-for="(item, index) in chunk" :key="index">
-                  <td>{{ pageIndex * 10 + index + 1 }}</td>
+                  <td class="text-center">{{ pageIndex * 10 + index + 1 }}</td>
                   <td>{{ item.description || '' }}</td>
-                  <td>{{ item.unit || '' }}</td>
-                  <td>{{ item.quantity || '' }}</td>
+                  <td class="text-center">{{ item.unit || '' }}</td>
+                  <td class="text-center">{{ item.quantity || '' }}</td>
                 </tr>
 
                 <!-- Fill empty rows if chunk size is less than 10 -->
@@ -85,18 +85,21 @@
             <div class="d-flex mt-10">
               <div class="w-50 pr-5">
                 <div class="font-weight-bold">REQUESTED BY:</div>
-                <div style="border-bottom: 1px solid #ccc; margin-top: 7px;"
+                <div style="border-bottom: 1px solid #ccc; margin-top: 22px;"
                   class="text-uppercase text-center font-weight-bold">
                   {{ pr.requested_by }} </div>
               </div>
               <div class="w-50">
-                <div class="font-weight-bold">APPROVED BY:</div>
-                <div style="border-bottom: 1px solid #ccc; margin-top: 7px;"
-                  class="text-uppercase text-center  font-weight-bold"> Grace
-                  Cruz </div>
+                <div class="font-weight-bold mb-2">Approved by:</div>
+                <v-sheet flat class="d-flex justify-center" style="margin-bottom: -12mm; margin-top: -12mm;">
+                  <v-img class="ma-0 pa-0" width="150" height="100" src="/mam_bing_signature.png" contain />
+                </v-sheet>
+                <div class="font-weight-bold"
+                  style="border-bottom: 1px solid #ccc; margin-top: 7px; text-transform: uppercase; text-align: center;">
+                  Grace Cruz
+                </div>
               </div>
             </div>
-
             <div class="d-flex mt-5">
               <div class="w-33 footer-text">Doc. Ref.:HCD-QF-PUR-002</div>
               <div class="w-33 text-center footer-text">Revision No.:00</div>
@@ -126,7 +129,7 @@ const purchasingStore = usePurchaseOrder()
 
 const items = purchasingStore.items
 const purchaseData = computed(() => {
-  return items;
+  return [...items].sort((a, b) => new Date(a.date_requested).getTime() - new Date(b.date_requested).getTime());
 });
 
 

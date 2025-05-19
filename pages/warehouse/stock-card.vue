@@ -3,13 +3,7 @@
 
     <body class="printable-page" v-for="(stock, index) in stockcardData" :key="index">
       <div class="pa-5 pt-5">
-        <!-- Loop through the PR twice -->
-
-
-
-
         <div style="display: flex; align-items: stretch;">
-
           <div
             style="width: 40%; text-align: right; border: 2px solid black; display: flex; align-items: center; justify-content: center;">
             <v-img class="ma-2" src="/hawkstow.png" />
@@ -82,7 +76,7 @@
               <td class="empty-row"> {{ new Date(stock.date_requested).toLocaleDateString() }}</td>
               <td> {{ stock.type }}</td>
               <td>{{ stock.supplier }}</td>
-              <td></td>
+              <td> {{ stock.items.quantity }}</td>
               <td></td>
               <td></td>
               <td></td>

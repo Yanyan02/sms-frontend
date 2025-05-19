@@ -90,7 +90,7 @@
                   <v-row no-gutters>
 
                     <v-col cols="6"> Date Requested : <b>{{ new Date(value.date_requested).toDateString()
-                        }}</b></v-col>
+                    }}</b></v-col>
                     <v-col cols="6" class="text-end align-end"> PR No. : <v-chip density="compact" class="text-caption"
                         color="amber" variant="tonal">
                         {{ value.no }} </v-chip></v-col>
@@ -431,10 +431,17 @@ async function get_pr(id: any) {
     query: { id: id }
   });
   pr_data.value = data
+  console.log("PRRRRRRRRRRRRRRRRRR", pr_data);
+
 }
 
 const print_request = (type: string) => {
-  if (pr_data.value.length === 0) return swal({ text: "No data found!", icon: "error" });
+  console.log('Typeeeeee', type);
+
+  if (!pr_data.value || pr_data.value.length === 0) {
+    return swal({ text: "No data found!", icon: "error" });
+  }
+
 
   const result = pr_data.value;
   purchasingStore.putData(result);
