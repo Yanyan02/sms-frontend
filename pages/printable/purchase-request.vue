@@ -1,4 +1,5 @@
 <template>
+
   <div v-for="(pr, index) in purchaseData" :key="index">
 
 
@@ -64,7 +65,8 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- Loop twice for each pr -->
+
+
                 <tr v-for="(item, index) in chunk" :key="index">
                   <td class="text-center">{{ pageIndex * 10 + index + 1 }}</td>
                   <td>{{ item.description || '' }}</td>
@@ -72,7 +74,7 @@
                   <td class="text-center">{{ item.quantity || '' }}</td>
                 </tr>
 
-                <!-- Fill empty rows if chunk size is less than 10 -->
+
                 <tr v-for="n in (10 - chunk.length)" :key="'empty-' + n">
                   <td class="empty-row"> </td>
                   <td> </td>
@@ -83,19 +85,23 @@
             </table>
 
             <div class="d-flex mt-10">
-              <div class="w-50 pr-5">
-                <div class="font-weight-bold">REQUESTED BY:</div>
-                <div style="border-bottom: 1px solid #ccc; margin-top: 22px;"
-                  class="text-uppercase text-center font-weight-bold">
-                  {{ pr.requested_by }} </div>
+              <div class="w-50 px-10">
+                <div class="font-weight-bold mb-2">Requested by:</div>
+                <v-sheet flat class="d-flex justify-center" style="margin-bottom: -5mm; margin-top: -5mm;">
+                  <v-img width="120" height="60" src="/ranielbabilonia.png" />
+                </v-sheet>
+                <div class="font-weight-bold"
+                  style="border-bottom: 1px solid #ccc; margin-top: 2px; text-transform: uppercase; text-align: center;">
+                  {{ pr.requested_by }}
+                </div>
               </div>
-              <div class="w-50">
+              <div class="w-50 px-10">
                 <div class="font-weight-bold mb-2">Approved by:</div>
                 <v-sheet flat class="d-flex justify-center" style="margin-bottom: -12mm; margin-top: -12mm;">
                   <v-img class="ma-0 pa-0" width="150" height="100" src="/mam_bing_signature.png" contain />
                 </v-sheet>
                 <div class="font-weight-bold"
-                  style="border-bottom: 1px solid #ccc; margin-top: 7px; text-transform: uppercase; text-align: center;">
+                  style="border-bottom: 1px solid #ccc; margin-top: 12px; text-transform: uppercase; text-align: center;">
                   Grace Cruz
                 </div>
               </div>
@@ -138,11 +144,19 @@ function print() {
   window.print();
 }
 
+// const chunkArray = (array: any[], size: number) => {
+//   return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
+//     array.slice(i * size, i * size + size)
+//   );
+// };
+
 const chunkArray = (array: any[], size: number) => {
-  return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
-    array.slice(i * size, i * size + size)
+  const filtered = array.filter(item => item.is !== false);
+  return Array.from({ length: Math.ceil(filtered.length / size) }, (_, i) =>
+    filtered.slice(i * size, i * size + size)
   );
 };
+
 // function formatDate(date: any) {
 //   return new Date(date).toLocaleDateString()
 function formatDate(date: any): string {

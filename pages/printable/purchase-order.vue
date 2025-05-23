@@ -46,7 +46,7 @@
               <div style="display: flex; align-items: center;">
                 <div style="width: 15%;">Ship to</div>
                 <div style="width: 80%; display: flex; align-items: center;">
-                  : <input :value="po.project" type="text"
+                  : <input :value="`Maysan Valenzuela`" type="text"
                     style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
                 </div>
               </div>
