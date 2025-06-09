@@ -2,7 +2,6 @@
 
   <div v-for="(pr, index) in purchaseData" :key="index">
 
-
     <body class="printable-page" v-for="(chunk, pageIndex) in chunkArray(pr.items, 10)" :key="pageIndex">
       <div class="pa-2 pt-5">
         <v-sheet class="mx-5">
@@ -87,8 +86,10 @@
             <div class="d-flex mt-10">
               <div class="w-50 px-10">
                 <div class="font-weight-bold mb-2">Requested by:</div>
-                <v-sheet flat class="d-flex justify-center" style="margin-bottom: -5mm; margin-top: -5mm;">
-                  <v-img width="120" height="60" src="/ranielbabilonia.png" />
+
+                <v-sheet flat class="d-flex justify-center" style="margin-bottom: -1mm; margin-top: -1mm; ">
+                  <v-img width="50" height="26" src="/ranielbabilonia.png" contain />
+
                 </v-sheet>
                 <div class="font-weight-bold"
                   style="border-bottom: 1px solid #ccc; margin-top: 2px; text-transform: uppercase; text-align: center;">

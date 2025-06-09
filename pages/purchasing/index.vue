@@ -90,7 +90,7 @@
                   <v-row no-gutters>
 
                     <v-col cols="6"> Date Requested : <b>{{ new Date(value.date_requested).toDateString()
-                    }}</b></v-col>
+                        }}</b></v-col>
                     <v-col cols="6" class="text-end align-end"> PR No. : <v-chip density="compact" class="text-caption"
                         color="amber" variant="tonal">
                         {{ value.no }} </v-chip></v-col>
@@ -384,7 +384,8 @@ async function get_purchase_request() {
     payload.project = searchData.value.project;
   }
   if (searchData?.value?.type) {
-    payload.type = searchData.value.type;
+    payload.type = "purchase-order"
+    // payload.type = searchData.value.type;
   }
   if (searchData?.value?.year) {
     payload.year = searchData.value.year;
@@ -408,14 +409,19 @@ async function get_project() {
 
 const print_result = (type: string) => {
   const result = purchase_request_data.value
-  console.log("purchasingStore", purchasingStore);
+  console.log("TYPEEEEEEEEEE", type);
 
   purchasingStore.putData(result)
   if (type === 'stock-card') {
     router.push({
       name: `warehouse-${type}`
     })
-  } else {
+  } else if (type === 'logbook') {
+    router.push({
+      name: `warehouse-${type}`
+    })
+  }
+  else {
 
     router.push({
       name: `printable-${type}`
@@ -480,6 +486,10 @@ const print_items = ref([
   {
     text: "Stock Card",
     value: "stock-card"
+  },
+  {
+    text: "Logbook",
+    value: "logbook"
   }
 ])
 const menu_items = ref([
