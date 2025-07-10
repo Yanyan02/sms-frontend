@@ -75,7 +75,7 @@
                 <td>{{ item.description || '' }}</td>
                 <td>{{ item.unit || '' }}</td>
                 <td>{{ item.quantity || '' }}</td>
-                <td> Good Condition</td>
+                <td> </td>
               </tr>
               <tr v-for="n in (20 - chunk.length)" :key="'empty-' + n">
                 <td class="empty-row"> </td>
@@ -94,15 +94,15 @@
           <div class="d-flex mt-10">
             <div class="w-50 pr-5">
               <div class="font-weight-bold">Delivered by:</div>
-              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;"
-                class="text-uppercase text-center font-weight-bold"> {{ pr.delivery ? pr.supplier : 'JOEL BERUELA' }}
+              <div style="border-bottom: 1px solid #ccc; margin-top: 17px;"
+                class="text-uppercase text-center font-weight-bold">
               </div>
             </div>
             <div class="w-50">
               <div class="font-weight-bold">Prepared & Received by:</div>
-              <div style="border-bottom: 1px solid #ccc; margin-top: 7px;"
+              <div style="border-bottom: 1px solid #ccc; margin-top: 17px;"
                 class="text-uppercase text-center font-weight-bold">
-                CHRISTIAN JOHN JABONETE </div>
+              </div>
             </div>
           </div>
 

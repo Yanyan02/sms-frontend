@@ -384,7 +384,7 @@ async function get_purchase_request() {
     payload.project = searchData.value.project;
   }
   if (searchData?.value?.type) {
-    payload.type = "purchase-order"
+    payload.type = "stock-card"
     // payload.type = searchData.value.type;
   }
   if (searchData?.value?.year) {
@@ -395,7 +395,7 @@ async function get_purchase_request() {
 
   const { data } = await $rest("purchasing/get-purchase-request", {
     method: "GET",
-    query: Object.keys(payload).length ? payload : {},
+    query: Object.keys(payload)?.length ? payload : {},
   });
   purchase_request_data.value = data;
 }
@@ -409,8 +409,6 @@ async function get_project() {
 
 const print_result = (type: string) => {
   const result = purchase_request_data.value
-  console.log("TYPEEEEEEEEEE", type);
-
   purchasingStore.putData(result)
   if (type === 'stock-card') {
     router.push({
@@ -437,18 +435,12 @@ async function get_pr(id: any) {
     query: { id: id }
   });
   pr_data.value = data
-  console.log("PRRRRRRRRRRRRRRRRRR", pr_data);
-
 }
 
 const print_request = (type: string) => {
-  console.log('Typeeeeee', type);
-
   if (!pr_data.value || pr_data.value.length === 0) {
     return swal({ text: "No data found!", icon: "error" });
   }
-
-
   const result = pr_data.value;
   purchasingStore.putData(result);
 

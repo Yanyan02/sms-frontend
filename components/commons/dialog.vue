@@ -1,14 +1,13 @@
 <template>
   <v-dialog v-bind="$props">
     <v-card rounded="lg">
-      <v-toolbar color="green" v-if="$attrs['hide-toolbar'] !== ''" border>
+      <v-toolbar class="py-2" color="green" v-if="$attrs['hide-toolbar'] !== ''" border>
         <v-list-item class="pl-2" density="compact">
           <template v-if="$attrs.icon" v-slot:prepend>
-            <v-avatar class="mr-1" variant="text">
-              <v-icon :icon="$attrs.icon" dark />
-            </v-avatar>
-          </template>
-
+  <v-avatar class="mr-1" variant="text">
+    <v-icon :icon="$attrs.icon" dark />
+  </v-avatar>
+</template>
           <v-list-item-title>{{ $attrs.title }}</v-list-item-title>
           <v-list-item-subtitle v-if="$attrs.subtitle">{{ $attrs.subtitle }}</v-list-item-subtitle>
         </v-list-item>

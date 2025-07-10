@@ -72,7 +72,7 @@
 
 
                     <v-col cols="12"> Status : <b> {{ value.status ? value.status : 'Nominated'
-                    }}</b></v-col>
+                        }}</b></v-col>
 
                     <v-col cols="12"> Owner: <b>{{ value.owner }}</b></v-col>
                     <v-col cols="12"> <v-divider class="my-2"></v-divider> </v-col>
@@ -491,8 +491,6 @@ function open_evaluation_form(id: any) {
 
 
 async function submit_evaluation() {
-  console.log("evaluation_criteria", evaluation_criteria);
-
   const { data, error } = await $rest('supplier/submit-evaluation', {
     method: "POST",
     body: {
@@ -502,8 +500,8 @@ async function submit_evaluation() {
   });
   if (error) return swal({ title: "Error", text: error, icon: "error" });
   swal({ title: "Success", text: data, icon: "success" });
-
 }
+
 
 const print_result = (type: string) => {
   if (evaluations_data.value.length === 0) return swal({ text: "No data found!", icon: "error" });
