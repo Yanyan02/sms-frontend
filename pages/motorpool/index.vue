@@ -27,7 +27,7 @@
     <hr class="mb-2" color="#115D33" />
 
     <v-row dense>
-
+      {{ checklist_data }}
       <v-col cols="12" class="d-flex">
         <v-sheet width="20%" border color="#F9FBE7" min-height="80vh">
           <v-card-text class="mt-8">
@@ -251,7 +251,7 @@
       submitText="Submit" @submit="">
       <v-card-text style="max-height: 80vh; overflow-y: auto;">
         <!-- Legend -->
-        <v-alert variant="tonal" color="info" border class="pa-2" closable>
+        <v-alert class="pa-5" variant="tonal" color="info" border closable>
           <v-row no-gutters class="ml-2">
             <v-col cols="12" class="pb-1" style="font-size: 10px;">Legend:</v-col>
             <v-col cols="6" class="py-1 d-flex align-center" style="font-size: 10px;">
@@ -278,7 +278,7 @@
           </v-row>
         </v-alert>
         <!-- Checklist Sections -->
-        <v-expansion-panels multiple class="my-4 ">
+        <v-expansion-panels multiple class="my-4">
           <v-expansion-panel v-for="(section, index) in checklistSections" :key="index">
             <v-expansion-panel-title>{{ section.title }}</v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -317,7 +317,7 @@
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
-        <v-divider class="my-4" />
+
         <v-row no-gutters>
           <v-col cols="6"> <v-checkbox label="Equipment Passed" /></v-col>
           <v-col cols="6"> <v-checkbox label="Equipment Failed" color="error" /></v-col>
@@ -341,7 +341,18 @@
         </v-row>
       </v-card-text>
     </commons-dialog>
-
+    <commons-dialog v-model="checklist_dialog" max-width="400" icon="mdi-school" title="Checklist Form"
+      submitText="PRINT" @submit="print_checklist">
+      <v-card-text>
+        <v-row dense>
+          <v-col cols="6"> <v-text-field v-model="check.from" label="From" hide-details type="month" /></v-col>
+          <v-col cols="6"> <v-text-field v-model="check.to" label="To" hide-details type="month" /></v-col>
+          <v-col cols="12"> <v-select v-model="check.project" class="mb-2" label="Project" item-title="name"
+              item-value="_id" :items="project_data" density="compact" variant="outlined" hide-details
+              clearable /></v-col>
+        </v-row>
+      </v-card-text>
+    </commons-dialog>
 
 
 
@@ -354,7 +365,7 @@
 <script lang="ts" setup>
 import useAuth from "~/store/auth";
 import swal from 'sweetalert';
-import { usePurchaseOrder } from '~/store/purchasing';
+import { useChecklist } from '~/store/motorpool';
 const { $rest } = useNuxtApp();
 const auth = useAuth();
 const user = useAuth().user;
@@ -363,11 +374,12 @@ const router = useRouter();
 onBeforeMount(() => {
   Promise.all([
     get_vehicle(),
-    get_project()
+    get_project(),
+    get_checklist(),
   ])
 })
 definePageMeta({ layout: "std-systems" });
-
+const checklistStore = useChecklist()
 
 
 interface Vehicle {
@@ -447,6 +459,9 @@ const handleMenuClick = (routeName: any, id: any) => {
     calibration_dialog.value = true;
   } else if (routeName === 'motorpool-pm-form') {
     pm_dialog.value = true
+  } else if (routeName === 'motorpool-daily-checklist') {
+    console.log('Ngeee');
+    checklist_dialog.value = true
   } else {
     router.push({ name: routeName });
   }
@@ -478,6 +493,11 @@ const menu_items = ref([
         text: 'View Equipment Utilization',
         value: 'motorpool-utilization-report',
         icon: 'mdi-truck-check'
+      },
+      {
+        text: 'View Checklist',
+        value: 'motorpool-daily-checklist',
+        icon: 'mdi-check'
       }
     ]
   },
@@ -498,6 +518,9 @@ const menu_items = ref([
     ]
   }
 ])
+
+
+
 
 
 const calibration = reactive({
@@ -645,6 +668,33 @@ const checklistSections = [
   { title: 'Undercarriage', items: undercarriage, model: 'undercarriage' },
   { title: 'Brakes, Tires, and Wheels', items: brakes_tires, model: 'brakes_tires' }
 ];
+
+const check = ref({
+  from: "",
+  to: "",
+  project: ""
+})
+const checklist_dialog = ref(false)
+const checklist_data = ref([])
+async function get_checklist() {
+  const payload = {};
+  if (check?.value) {
+    payload.from = check?.value?.from
+    payload.to = check?.value?.to
+    payload.project = check?.value?.project
+  }
+  const { data } = await $rest('motorpool/get-checklist', {
+    method: "GET",
+    query: Object.keys(payload)?.length ? payload : {},
+  });
+  checklist_data.value = data;
+}
+const print_checklist = async () => {
+  await get_checklist()
+  const result = checklist_data.value
+  checklistStore.putData(result)
+  router.push({ name: 'motorpool-daily-checklist' });
+}
 </script>
 
 <style scoped></style>

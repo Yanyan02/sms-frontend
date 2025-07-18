@@ -1,10 +1,11 @@
 <template>
   <div>
 
-    <body class="printable-page">
+
+    <body class="printable-page" v-for="(check, vIndex) in checklistData" :key="check._id">
       <div class="pa-2 pt-5">
         <v-sheet class="mx-5">
-
+          {{ checklistData }}
           <!-- Header -->
           <div style="display: flex; align-items: stretch;">
             <div
@@ -23,15 +24,15 @@
           <div style="display: flex; align-items: center;">
             <div style="width: 15%;">Equipment Name</div>
             <div style="width: 50%; display: flex; align-items: center;">
-              : <input type="text" style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);"
-                disabled>
+              : <input :value="check.vehicle + ' ' + check.id" type="text"
+                style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
             </div>
           </div>
           <div style="display: flex; align-items: center;">
             <div style="width: 15%;">Location</div>
             <div style="width: 50%; display: flex; align-items: center;">
-              : <input type="text" style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);"
-                disabled>
+              : <input :value="check.project" type="text"
+                style="flex-grow: 1; border: none; border-bottom: 1px solid rgba(0, 0, 0, 0.38);" disabled>
             </div>
           </div>
 
@@ -121,12 +122,18 @@
 
 <script lang="ts" setup>
 import { useRouter, useRoute } from "vue-router";
+import { useChecklist } from "~/store/motorpool";
 const router = useRouter();
 const route = useRoute();
-
+const checklistStore = useChecklist()
 function print() {
   window.print();
 }
+const items = checklistStore.items
+const checklistData = computed(() => {
+  return items;
+});
+
 const checklist = ref([
   {
     category: "Brakes",
