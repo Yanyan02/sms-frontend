@@ -250,31 +250,53 @@
     <commons-dialog v-model="pm_dialog" max-width="700" icon="mdi-tune" title="Preventive Maintenance Checklist"
       submitText="Submit" @submit="">
       <v-card-text style="max-height: 80vh; overflow-y: auto;">
+        <!-- Legend -->
+        <v-alert variant="tonal" color="info" border class="pa-2" closable>
+          <v-row no-gutters class="ml-2">
+            <v-col cols="12" class="pb-1" style="font-size: 10px;">Legend:</v-col>
+            <v-col cols="6" class="py-1 d-flex align-center" style="font-size: 10px;">
+              <v-chip color="blue" variant="outlined" density="compact" class="px-4 mr-3"
+                style="font-size: 10px; height: 18px;">NA</v-chip>
+              Not Applicable
+            </v-col>
+            <v-col cols="6" class="py-0 d-flex align-center" style="font-size: 10px;">
+              <v-chip color="green" variant="outlined" density="compact" class="px-4 mr-4"
+                style="font-size: 10px; height: 18px;">P</v-chip>
+              Passed in good condition
+            </v-col>
+            <v-col cols="6" class="py-0 d-flex align-center" style="font-size: 10px;">
+              <v-chip color="orange" variant="outlined" density="compact" class="px-4 mr-4"
+                style="font-size: 10px; height: 18px;">M</v-chip>
+              Maintenance required
+            </v-col>
 
-
-
-
-
+            <v-col cols="6" class="py-0 d-flex align-center" style="font-size: 10px;">
+              <v-chip color="red" variant="outlined" density="compact" class="px-4 mr-4"
+                style="font-size: 10px; height: 18px;">R</v-chip>
+              Rejected – repair needed
+            </v-col>
+          </v-row>
+        </v-alert>
         <!-- Checklist Sections -->
         <v-expansion-panels multiple class="my-4 ">
-          <v-expansion-panel class="bg-primary text-white" v-for="(section, index) in checklistSections" :key="index">
+          <v-expansion-panel v-for="(section, index) in checklistSections" :key="index">
             <v-expansion-panel-title>{{ section.title }}</v-expansion-panel-title>
-            <v-expansion-panel-text class="bg-green-lighten-5">
+            <v-expansion-panel-text>
               <v-simple-table dense>
                 <thead>
                   <tr>
                     <th width="600px" class="text-start">Item</th>
-                    <th class="text-start" width="100px">NA</th>
-                    <th class="text-start" width="100px">P</th>
-                    <th class="text-start" width="100px">M</th>
-                    <th class="text-start" width="100px">R</th>
+                    <th class="text-start pl-1" width="100px">NA</th>
+                    <th class="text-start pl-2" width="100px">P</th>
+                    <th class="text-start pl-1" width="100px">M</th>
+                    <th class="text-start pl-1" width="100px">R</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="item in section.items" :key="item.key">
                     <td>{{ item.label }}</td>
                     <td>
-                      <v-radio :value="'NA'" v-model="calibration[section.model][item.key]" color="grey"
+                      <v-radio :value="'NA'" v-model="calibration[section.model][item.key]" color="blue"
                         density="compact" hide-details />
                     </td>
                     <td>
@@ -295,27 +317,28 @@
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
-
-
-        <!-- Work Required -->
         <v-divider class="my-4" />
-        <v-row dense>
-          <v-col cols="12" v-for="(work, i) in calibration.work_required" :key="i">
-            <v-text-field :label="`Work Required #${i + 1}`" v-model="calibration.work_required[i]" />
-          </v-col>
+        <v-row no-gutters>
+          <v-col cols="6"> <v-checkbox label="Equipment Passed" /></v-col>
+          <v-col cols="6"> <v-checkbox label="Equipment Failed" color="error" /></v-col>
           <v-col cols="12">
-            <v-btn @click="addWorkRequired" icon="mdi-plus" variant="text" color="primary">Add More</v-btn>
+            <p class="text-subtitle-2 font-weight-medium">Work Required</p>
+            <v-row no-gutters class="align-center">
+              <v-col cols="6">
+                <span class="text-body-2 font-weight-regular">
+                  1. Driver's Compartment &gt; Sun Visors
+                </span>
+              </v-col>
+              <v-col cols="3" class="pl-4">
+                <v-text-field label="Remarks" variant="underlined" density="compact" hide-details />
+              </v-col>
+              <v-col cols="3" class="pl-4">
+                <v-text-field label="Assigned to" variant="underlined" density="compact" hide-details />
+              </v-col>
+            </v-row>
           </v-col>
-        </v-row>
-
-        <!-- Signatures -->
-        <v-divider class="my-4" />
-        <v-row dense>
-          <v-col cols="6"><v-text-field v-model="calibration.assigned_to" label="Assigned To" /></v-col>
 
         </v-row>
-
-
       </v-card-text>
     </commons-dialog>
 
@@ -475,12 +498,8 @@ const menu_items = ref([
     ]
   }
 ])
-const rating_options = ['NA', 'P', 'M', 'R']
-const activeTab = ref(0)
 
-const addWorkRequired = () => {
-  calibration.work_required.push('');
-};
+
 const calibration = reactive({
   company: '',
   unit_no: '',
