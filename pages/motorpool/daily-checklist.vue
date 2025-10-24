@@ -5,7 +5,7 @@
     <body class="printable-page" v-for="(check, vIndex) in checklistData" :key="check._id">
       <div class="pa-2 pt-5">
         <v-sheet class="mx-5">
-          {{ checklistData }}
+          {{ check.records }}
           <!-- Header -->
           <div style="display: flex; align-items: stretch;">
             <div
@@ -76,7 +76,7 @@
             <tbody>
               <tr v-for="(item, i) in 8" :key="item">
                 <td class="text-center font-weight-bold">{{ i + 1 }}</td>
-                <td v-for="(day, index) in 31" :key="day"></td>
+                <td v-for="(day, index) in 31" :key="day"> </td>
               </tr>
             </tbody>
           </table>

@@ -460,7 +460,10 @@ const handleMenuClick = (routeName: any, id: any) => {
   } else if (routeName === 'motorpool-pm-form') {
     pm_dialog.value = true
   } else if (routeName === 'motorpool-daily-checklist') {
-    console.log('Ngeee');
+    console.log("ISSSSSSSSSSSSSSSSSSSSSSSSS", id)
+    console.log('check.value BEFORE:', JSON.stringify(check.value))
+    check.value.vehicle = id
+    console.log('check.value AFTER:', JSON.stringify(check.value))
     checklist_dialog.value = true
   } else {
     router.push({ name: routeName });
@@ -672,16 +675,20 @@ const checklistSections = [
 const check = ref({
   from: "",
   to: "",
-  project: ""
+  project: "",
+  vehicle: ""
 })
 const checklist_dialog = ref(false)
 const checklist_data = ref([])
 async function get_checklist() {
+  console.log("NGEEEEEEEEEEEEEEE", check.value);
+
   const payload = {};
   if (check?.value) {
     payload.from = check?.value?.from
     payload.to = check?.value?.to
     payload.project = check?.value?.project
+    payload.vehicle = check?.value?.vehicle
   }
   const { data } = await $rest('motorpool/get-checklist', {
     method: "GET",
