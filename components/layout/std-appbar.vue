@@ -3,25 +3,13 @@
     <v-container class="fill-height d-flex align-content-center pl-1" v-bind="$attrs">
       <slot name="nav-icon" />
 
-      <!-- <v-avatar class="pa-1">
-        <v-img src="/logo.svg" @click="$router.push({ name: 'home' })" style="cursor : pointer" />
-      </v-avatar> -->
-      <v-app-bar-title class="pt-1 text-indigo text-uppercase" @click="$router.push({ name: 'home' })"
+      <v-app-bar-title class="pt-1 text-primary text-uppercase" @click="$router.push({ name: 'home' })"
         style="cursor : pointer">
         {{ $props.appbar_title }}
       </v-app-bar-title>
-      <!-- <dev-display-debugger id="floater" /> -->
+      <NavItem :items="nav.systems_navs" class="ml-6" horizontal />
+
       <v-spacer />
-      <!-- 
-      <v-tooltip location="bottom" text="Soonish.">
-        <template v-slot:activator="{ props }">
-          <h6 v-bind="props" class="text-subtitle-2 font-weight-medium">
-            <v-icon class="mr-4" icon="mdi-book-open" color="primary" size="24" />
-          </h6>
-        </template>
-</v-tooltip> -->
-
-
 
       <v-menu location="bottom center" location-strategy="connected" :close-on-content-click="false">
 
@@ -32,9 +20,9 @@
           <v-card-text class="pt-4 pb-0 px-0">
             <v-list class="py-0 px-0" density="compact">
               <v-list-item class="pb-4" title="Administrative Tools" density="compact">
-                <!-- <template v-slot:prepend>
+                <template v-slot:prepend>
                   <v-icon>mdi-account</v-icon>
-                </template> -->
+                </template>
               </v-list-item>
 
               <v-divider />
@@ -48,21 +36,18 @@
                 </template>
               </v-list-item>
 
-              <!-- <v-list-item title="User Management" color="primary"
+              <v-list-item title="User Management" color="primary"
                 :to="{ name: `user-management`, params: account_params }" v-if="user.side == 'RO'">
 
                 <template v-slot:prepend>
                   <v-icon class="mr-1" icon="mdi-account" />
                 </template>
-              </v-list-item> -->
-
-
+              </v-list-item>
 
             </v-list>
           </v-card-text>
         </v-card>
       </v-menu>
-
       <v-menu location="bottom center" :close-on-content-click="false">
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" @click="notification_menu = false" :icon="!ring_bell ? 'mdi-bell-ring' : 'mdi-bell'"

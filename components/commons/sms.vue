@@ -1,5 +1,5 @@
 <template>
-  <v-card id="item-container" class="h-100" color="grey-lighten-5" rounded="0">
+  <v-card id="item-container" class="h-auto" color="transparent" rounded="0" v-bind="$attrs">
     <v-toolbar class="d-block border-b gradient-green" extension-height="64" :extended="Boolean($attrs.extended)">
       <v-toolbar-title>
         <v-list-item class="pl-0" :title="title" :subtitle="subtitle">
@@ -26,8 +26,7 @@
     <slot name="prepend-body" />
 
     <!-- Fixed max-height 80vh with scrollbar -->
-    <v-sheet class="rounded-b-lg overflow-auto" color="transparent"
-      style="height: 80vh; max-height: 80vh; overflow-y: auto;">
+    <v-sheet class="rounded-b-lg overflow-auto" color="transparent" style=" overflow-y: auto;">
       <v-card-text>
         <v-row v-if="!items.length && $attrs['display-type'] !== 'table'" justify="center" align="center" dense>
           No Item Found

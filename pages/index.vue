@@ -1,135 +1,107 @@
 <template>
-  <v-row class="h-100" justify="center" align="center" dense>
-    <v-col cols="12" style="text-align : -webkit-center">
-      <!-- deped.svg-->
-      <!-- <v-img src="/deped.svg" height="90" /> -->
-      <v-sheet max-width="480">
-        <v-list-item>
-          <template v-slot:prepend>
-            <v-avatar size="92" image="/NCR.png" />
-          </template>
+  <v-container fluid class="pa-0 fill-height login-container">
+    <v-row no-gutters class="fill-height">
+      <v-col cols="12" md="7" lg="8" class="d-none d-md-flex align-center justify-center relative"
+        style="background: linear-gradient(rgba(0, 20, 50, 0.6), rgba(0, 20, 50, 0.6)), 
+               url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80') center center / cover no-repeat;">
+        <div class="text-white px-12">
+          <h1 class="text-h2 font-weight-bold mb-4">ISO: 9001</h1>
+          <h2 class="text-h4 font-weight-light mb-6">Quality Management System</h2>
+          <v-divider class="mb-6" color="white" thickness="2" width="100"></v-divider>
+          <p class="text-body-1 opacity-80 max-width-600">
+            Streamlining excellence through digital compliance. <br>
+            Ensuring every standard is met, every time.
+          </p>
+        </div>
+      </v-col>
 
-          <h6 class="text-h5 text-medium-emphasis"> Staffing Modification System</h6>
-        </v-list-item>
-      </v-sheet>
-      <v-card class="mt-4 pt-6 pb-4 px-6" id="login-card" :loading="login_load" max-width="480" min-height="560"
-        rounded="lg">
-        <v-card-title class="text-center">Sign In Using</v-card-title>
+      <v-col cols="12" md="5" lg="4" class="d-flex align-center justify-center bg-grey-lighten-4">
+        <v-card flat class="pa-8 pa-md-12 mx-auto bg-transparent" width="100%" max-width="500">
+          <div class="d-md-none text-center mb-8">
+            <h2 class="text-h4 font-weight-bold text-primary">ISO: 9001</h2>
+            <p class="text-subtitle-1">QMS System</p>
+          </div>
 
-        <v-card-text class="pb-0 pt-4">
-          <v-btn class="mr-2">
-            <img class="mr-2" src="/facebook.svg" height="24" />
-            Facebook
-          </v-btn>
-          <v-btn>
-            <img class="mr-2" src="/google.svg" height="24" />
-            Google
-          </v-btn>
-        </v-card-text>
+          <div class="mb-10">
+            <h3 class="text-h4 font-weight-bold mb-2 text-grey-darken-3">Sign In</h3>
+            <p class="text-body-2 text-grey-darken-1">Enter your credentials to access your dashboard.</p>
+          </div>
 
-        <v-card-text class="d-flex align-center pb-0">
-          <v-divider />
-          <small class="text-subtitle-2 mx-2 font-weight-bold">Or</small>
-          <v-divider />
-        </v-card-text>
-
-        <v-fade-transition>
-          <v-card-text v-show="login_success">
-            <v-alert density="comfortable" type="success" variant="outlined" border>
-              Welcome back <strong>{{ form.username }}</strong>
+          <v-slide-y-transition>
+            <v-alert v-if="login_success" type="success" variant="tonal" class="mb-6" rounded="lg">
+              Welcome back, <strong>{{ form.username }}</strong>!
             </v-alert>
-          </v-card-text>
-        </v-fade-transition>
+          </v-slide-y-transition>
 
-        <v-fade-transition>
-          <v-card-text v-show="login_fail">
-            <v-alert density="comfortable" type="error" variant="outlined" border>
+          <v-slide-y-transition>
+            <v-alert v-if="login_fail" type="error" variant="tonal" class="mb-6" rounded="lg">
               {{ login_error }}
             </v-alert>
-          </v-card-text>
-        </v-fade-transition>
+          </v-slide-y-transition>
 
-        <v-card-text style="text-align : start">
           <v-form v-model="valid" @submit.prevent="login">
-            <v-text-field class="pb-1" v-model="form.username" @input="() => clear_error()"
-              prepend-inner-icon="mdi-account" placeholder="Username" :rules="[$validator.required]"
-              :error-messages.sync="username_error" required />
+            <v-text-field v-model="form.username" label="Username" prepend-inner-icon="mdi-account-outline"
+              variant="outlined" color="primary" class="mb-2" rounded="lg" :rules="[$validator.required]"
+              @input="clear_error" />
 
-            <v-text-field v-model="form.password" prepend-inner-icon="mdi-lock"
-              :append-inner-icon="show_password ? 'mdi-eye-off' : 'mdi-eye'" @input="() => clear_error()"
-              @click:append-inner="show_password = !show_password" placeholder="Password" autocomplete="on"
-              :error-messages.sync="password_error" :rules="[$validator.required]"
-              :type="show_password ? 'text' : 'password'" required />
+            <v-text-field v-model="form.password" label="Password" prepend-inner-icon="mdi-lock-outline"
+              :append-inner-icon="show_password ? 'mdi-eye-off' : 'mdi-eye'" :type="show_password ? 'text' : 'password'"
+              variant="outlined" color="primary" rounded="lg" class="mb-2" :rules="[$validator.required]"
+              @click:append-inner="show_password = !show_password" @input="clear_error" />
 
-            <div class="d-flex flex-row">
-              <v-checkbox v-model="session_mode" @input="toggle_mode" label="Remember Me" hide-details />
-              <h6 class="text-subtitle-2 text-blue-darken-4" style="align-self : center">
-                <nuxt-link to="/forgot-password">
-                  Forgot Password?
-                </nuxt-link>
-              </h6>
+            <div class="d-flex align-center justify-space-between mb-6">
+              <v-checkbox v-model="session_mode" label="Remember me" hide-details color="primary"
+                density="comfortable" />
+              <nuxt-link to="/forgot-password" class="text-decoration-none text-primary font-weight-bold text-caption">
+                Forgot Password?
+              </nuxt-link>
             </div>
 
-            <small class="text--secondary">We use cookies to improve your experience, for more information, You may
-              refer to our <nuxt-link to="/cookie-policy">Cookie Policy</nuxt-link></small>
-
-            <br />
-            <br />
-            <small class="text--secondary">By Logging-In, you agree to our <nuxt-link to="/privacy-policy">Privacy
-                Policy</nuxt-link></small>
-            <br />
-            <br />
-
-            <v-btn color="primary" :disabled="!valid" type="submit" :loading="login_load" block>Login</v-btn>
+            <v-btn block size="x-large" color="primary" elevation="0" class="text-none rounded-lg" type="submit"
+              :loading="login_load" :disabled="!valid">
+              Sign In
+            </v-btn>
           </v-form>
-        </v-card-text>
-      </v-card>
-      <small>Identity Server provided by Southern Convergence</small>
-    </v-col>
-  </v-row>
+
+          <footer class="mt-10 text-center">
+            <p class="text-caption text-grey">
+              By logging in, you agree to our
+              <nuxt-link to="/privacy-policy" class="text-primary">Privacy Policy</nuxt-link>
+              and
+              <nuxt-link to="/cookie-policy" class="text-primary">Cookie Policy</nuxt-link>.
+            </p>
+          </footer>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
+// Logic remains largely the same as your original script
 import useAuth from "~/store/auth";
 
-definePageMeta({
-  layout: "plain",
-
-  is_public: true
-});
+definePageMeta({ layout: "plain", is_public: true });
 
 const auth = useAuth();
 const router = useRouter();
 
-/* States */
 const show_password = ref(false);
 const valid = ref(false);
-let login_load = ref(false);
-let login_success = ref(false);
-let login_fail = ref(false);
-let login_error = ref("");
+const login_load = ref(false);
+const login_success = ref(false);
+const login_fail = ref(false);
+const login_error = ref("");
+const session_mode = ref(true);
 
-let username_error = ref("");
-let password_error = ref("");
+const form = ref({ username: "", password: "" });
 
-let session_mode = ref(true);
-
-const form = ref({
-  username: "",
-  password: ""
-});
-
-/* Methods */
 function login() {
-  const { username, password } = form.value;
   login_load.value = true;
-
-  auth.login(username, password)
+  auth.login(form.value.username, form.value.password)
     .then(() => {
       login_fail.value = false;
-      login_error.value = "";
       login_success.value = true;
-      valid.value = false;
       setTimeout(() => {
         login_load.value = false;
         router.replace({ name: "account-profile" });
@@ -137,36 +109,37 @@ function login() {
     })
     .catch((error: any) => {
       login_load.value = false;
-      login_success.value = false;
-      if (error === "Invalid Username") username_error.value = error;
-      if (error === "Invalid Password") password_error.value = error;
-      if (error === "Already signed-in") {
-        login_fail.value = true;
-        login_error.value = error;
-
-        setTimeout(() => {
-          router.replace({ name: "account-profile" });
-        }, 1500);
-      }
-      if (error === "Failed to connect to the server.") {
-        login_fail.value = true;
-        login_error.value = error;
-      }
+      login_fail.value = true;
+      login_error.value = error;
     });
 }
 
 function clear_error() {
-  username_error.value = "";
-  password_error.value = "";
-}
-
-function toggle_mode() {
-  auth.switch_mode(session_mode.value);
+  login_fail.value = false;
+  login_error.value = "";
 }
 </script>
 
 <style scoped>
-#login-card {
-  border: 1px solid #dddddd;
+.login-container {
+  min-height: 90vh;
+  overflow: hidden;
+}
+
+.opacity-80 {
+  opacity: 0.8;
+}
+
+.max-width-600 {
+  max-width: 600px;
+}
+
+/* Subtle hover effect for the button */
+.v-btn {
+  transition: transform 0.2s ease;
+}
+
+.v-btn:hover {
+  transform: translateY(-1px);
 }
 </style>

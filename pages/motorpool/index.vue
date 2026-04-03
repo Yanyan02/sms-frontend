@@ -27,7 +27,6 @@
     <hr class="mb-2" color="#115D33" />
 
     <v-row dense>
-      {{ checklist_data }}
       <v-col cols="12" class="d-flex">
         <v-sheet width="20%" border color="#F9FBE7" min-height="80vh">
           <v-card-text class="mt-8">

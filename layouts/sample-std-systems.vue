@@ -18,7 +18,7 @@
       </v-sheet>
     </v-navigation-drawer>
 
-    <v-main>
+    <v-main class="bg-grey">
       <slot />
     </v-main>
   </v-app>

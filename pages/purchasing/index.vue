@@ -1,165 +1,184 @@
 <template>
+  <div class="ma-4">
+    <v-row no-gutters>
+      <v-col cols=" 12" class="py-2">
+        <v-row align="center" dense>
+          <v-col cols="2">
+            <v-select v-model="searchData.project" label="Project" :items="project_data" item-title="name"
+              item-value="_id" variant="comfortable" rounded="xl" hide-details density="compact"
+              prepend-inner-icon="mdi-magnify" bg-color="grey-lighten-1" clearable />
+          </v-col>
+          <v-col cols="2">
+            <v-select v-model="searchData.type" label="Request type" :items="print_items" item-title="text"
+              item-value="value" variant="comfortable" rounded="xl" hide-details density="compact"
+              prepend-inner-icon="mdi-filter-variant" bg-color="grey-lighten-1" clearable />
+          </v-col>
+          <v-col cols="2" v-if="searchData.type === 'stock-card'">
+            <v-text-field v-model="searchData.year" label="Year & Month" type="month" variant="comfortable" rounded="xl"
+              hide-details density="compact" bg-color="grey-lighten-1" clearable />
+          </v-col>
 
-  <v-sheet class="ma-4">
-    <v-toolbar flat class="py-2" color="transparent">
-      <template v-slot:title>
-        <v-row dense>
-          <v-col cols="12">
-            <h2 class="font-weight-medium text-primary">Summary of Purchase Requisition</h2>
-            <small class="font-weight-thin" style="color: #B1D182;">
-              Overview of external providers items and services
-            </small>
+          <v-col cols="auto">
+            <v-btn color="success" class="white--text px-6" rounded="xl" elevation="2" @click="get_purchase_request">
+              Filter
+            </v-btn>
+          </v-col>
+          <v-col cols="auto">
+            <v-btn color="blue darken-4" rounded="xl" elevation="2" @click="print_result(searchData.type)"
+              class="white--text px-6">
+              Print
+            </v-btn>
+          </v-col>
+          <v-spacer />
+          <v-col cols="2">
+            <v-btn prepend-icon="mdi-plus-circle" @click="purchase_request_dialog = true" color="primary" rounded="xl"
+              elevation="2" size="large" block class="px-6">
+              Purchase Request
+            </v-btn>
           </v-col>
         </v-row>
-      </template>
-      <v-spacer></v-spacer>
-      <v-btn>
-        <v-icon class="pr-3" color="#228B22">mdi-database</v-icon>
-        import
-      </v-btn>
+      </v-col>
 
-    </v-toolbar>
-    <hr class="mb-2" color="#115D33" />
-    <v-row dense>
+      <v-col cols="12">
+        <commons-sms title="Summary of Purchase Requisition" subtitle="A brief overview of purchase requisitions."
+          icon="mdi-note-text-outline" :items="purchase_request_data" :display_types="['grid', 'table']" rounded="xl"
+          elevation="5">
 
-      <v-col cols="12" class="d-flex">
-        <v-sheet width="20%" border color="#F9FBE7" min-height="80vh">
-          <v-card-text class="mt-8">
-            <v-row dense>
-              <v-col cols="12">
+          <template v-slot:table="{ items }">
+            <v-card-text border style="max-height: 80vh; overflow-y: auto;">
+              <v-data-table :items="purchase_request_data" :headers="purchase_request_header">
+                <template v-slot:item.no="{ item }">
+                  <v-chip density="compact" class="text-caption" color="amber" variant="tonal">
+                    {{ item.selectable.no }} </v-chip>
+                </template>
+                <template v-slot:item.date_requested="{ item }">
+                  <span class="text-success">{{ new Date(item.selectable.date_requested).toDateString()
+                  }}</span>
+                </template>
+                <template v-slot:item.items="{ item }">
+                  <v-chip size="small" color="info">
+                    {{ item.selectable.items.length }} item(s)
+                  </v-chip>
 
-                <v-select class="mb-2" v-model="searchData.project" label="Project" :items="project_data"
-                  item-title="name" item-value="_id" density="compact" variant="outlined" hide-details clearable />
-                <v-select class="mb-2" v-model="searchData.type" label="Request type" :items="print_items"
-                  item-title="text" item-value="value" density="compact" variant="outlined" hide-details clearable />
+                </template>
+                <template v-slot:item.actions="{ item }">
+                  <v-btn density="compact" color="primary">Actions</v-btn>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </template>
+          <template v-slot:item="{ value, index }">
+            <v-card :key="index" class="ma-3 elevation-1" rounded="xl" border="sm"
+              style="border-color: #f0f0f0 !important; transition: transform 0.2s ease-in-out;"
+              @mouseover="hover = index" @mouseout="hover = null"
+              :style="{ transform: hover === index ? 'translateY(-4px)' : 'translateY(0px)' }">
+              <v-list-item class="px-4 pt-4 pb-2">
+                <template v-slot:prepend>
+                  <v-avatar color="primary" rounded="lg" size="48" class="mr-3">
+                    <v-icon color="white">mdi-cart-outline</v-icon>
+                  </v-avatar>
+                </template>
 
-                <v-text-field class="mb-2" v-if="searchData.type === 'stock-card'" v-model="searchData.year"
-                  label="Year & Month" type="month" density="compact" variant="outlined" hide-details clearable />
+                <v-list-item-title class="text-subtitle-1 font-weight-black text-primary">
+                  PR No. {{ value.no }}
+                </v-list-item-title>
 
-              </v-col>
+                <v-list-item-subtitle class="text-button d-flex align-center mt-1">
+                  <span>{{ value.supplier }}</span>
+                  <v-spacer />
+                  <v-icon size="14" color="primary" class="mr-1">mdi-calendar-edit</v-icon>
+                  {{ new Date(value.date_requested).toDateString() }}
+                </v-list-item-subtitle>
 
-              <v-col cols="12">
-                <v-btn block color="success" class="white--text" @click="get_purchase_request">
-                  Filter
-                </v-btn>
-              </v-col>
-              <v-col cols="12">
-                <v-btn block color="blue darken-4" @click="print_result(searchData.type)" class="white--text">
-                  Print
-                </v-btn>
-              </v-col>
-              <v-col cols="12">
-                <v-btn block color="amber" @click="purchase_request_dialog = true">
-                  Create
-                </v-btn>
-              </v-col>
+                <template v-slot:append>
+                  <v-menu :close-on-content-click="false" location="bottom end" transition="scale-transition">
+                    <template v-slot:activator="{ props }">
+                      <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text" color="grey-lighten-1"
+                        density="comfortable" @click="get_pr(value._id)" />
+                    </template>
 
-            </v-row></v-card-text>
-        </v-sheet>
-        <v-sheet border width="80%" height="80vh">
+                    <v-card min-width="300" rounded="xl" elevation="12">
+                      <v-list bg-color="primary" class="py-2">
+                        <v-list-item title="Manage Purchasing" base-color="white">
+                          <template v-slot:append>
+                            <v-icon size="24">mdi-cart-check</v-icon>
+                          </template>
+                        </v-list-item>
+                      </v-list>
 
-          <commons-sms title="Summary of Purchase Requisition" icon="mdi-note-text-outline"
-            :items="purchase_request_data" :display_types="['grid', 'table']">
+                      <v-divider />
 
-            <template v-slot:table="{ items }">
-              <v-card-text border style="max-height: 80vh; overflow-y: auto;">
-                <v-data-table :items="purchase_request_data" :headers="purchase_request_header">
-                  <template v-slot:item.no="{ item }">
-                    <v-chip density="compact" class="text-caption" color="amber" variant="tonal">
-                      {{ item.selectable.no }} </v-chip>
-                  </template>
-                  <template v-slot:item.date_requested="{ item }">
-                    <span class="text-success">{{ new Date(item.selectable.date_requested).toDateString()
-                    }}</span>
-                  </template>
-                  <template v-slot:item.items="{ item }">
-                    <v-chip size="small" color="info">
-                      {{ item.selectable.items.length }} item(s)
-                    </v-chip>
+                      <v-list lines="two" density="compact" class="pa-2">
+                        <v-list-item v-for="item in menu_items" :key="item.value" :title="item.text"
+                          :subtitle="item.subtitle" @click="print_request(item.value)" rounded="md" class="mb-1"
+                          color="primary">
+                          <template v-slot:prepend>
+                            <v-avatar size="32" color="grey-lighten-4" class="mr-2">
+                              <v-icon color="primary" size="20">{{ item.icon }}</v-icon>
+                            </v-avatar>
+                          </template>
+                        </v-list-item>
+                      </v-list>
 
-                  </template>
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn density="compact" color="primary">Actions</v-btn>
-                  </template>
-                </v-data-table>
+                      <v-divider />
+
+                      <v-card-actions class="pa-2">
+                        <v-spacer />
+                        <v-btn variant="text" color="error" class="text-none font-weight-bold"
+                          @click="v_menu_model = false">Close</v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-menu>
+                </template>
+              </v-list-item>
+
+              <v-card-text class="px-4 py-2">
+                <div class="d-flex align-center mb-4 bg-grey-lighten-4 pa-2 rounded-lg"
+                  style="border-left: 4px solid #1976D2;">
+                  <v-icon size="18" class="mr-2 text-primary">mdi-account-circle-outline</v-icon>
+                  <span class="text-body-2 text-grey-darken-3">
+                    Requested by: <strong>{{ value.requested_by }}</strong>
+                  </span>
+                </div>
+
+                <div class="mb-1 px-1">
+                  <!-- <div class="d-flex align-center text-body-2 mb-1">
+                    Supplier :
+                    <span class="font-weight-bold text-grey-darken-4">{{ value.supplier }}</span>
+                  </div> -->
+                  <div class="d-flex align-center text-body-2 mb-1">
+                    <v-icon class="mr-2 text-primary" size="18">mdi-folder-cog-outline</v-icon>
+                    <span class="font-weight-bold text-grey-darken-4">{{ value.project }}</span>
+                  </div>
+                  <div class="d-flex align-center text-caption text-grey-darken-1">
+                    <v-icon class="mr-2 text-blue-darken-1" size="18">mdi-map-marker-radius-outline</v-icon>
+                    {{ value.address }}
+                  </div>
+                </div>
               </v-card-text>
-            </template>
-            <template v-slot:item="{ value, index, display }">
-              <v-card class="mx-auto" rounded="lg" color="primary" variant="tonal">
-                <v-card-text>
-                  <v-row no-gutters>
 
-                    <v-col cols="6"> Date Requested : <b>{{ new Date(value.date_requested).toDateString()
-                        }}</b></v-col>
-                    <v-col cols="6" class="text-end align-end"> PR No. : <v-chip density="compact" class="text-caption"
-                        color="amber" variant="tonal">
-                        {{ value.no }} </v-chip></v-col>
-                    <v-col cols="12"> Requested by : <b>{{ value.requested_by }}</b></v-col>
-                    <v-col cols="12"> <v-divider class="my-2"></v-divider> </v-col>
+              <v-divider />
+              <v-card-actions class="bg-primary px-4 py-2" style="min-height: 48px;">
+                <span class="text-button text-white" style="letter-spacing: 1px !important;">Material
+                  Qty</span>
+                <v-spacer />
+                <v-chip size="small" color="white" variant="flat"
+                  class="font-weight-black text-primary px-3 text-button">
+                  {{ value.items.length }} items
+                </v-chip>
+              </v-card-actions>
+            </v-card>
+          </template>
+        </commons-sms>
 
-                    <v-col cols="12"> <v-icon class="mr-2 text-primary">mdi-folder-cog</v-icon> {{
-                      value.project
-                    }}</v-col>
-                    <v-col cols="12"> <v-icon class="mr-2 text-blue">mdi-map-marker</v-icon>{{ value.address
-                    }}</v-col>
-                    <v-col cols="12" class="d-flex align-center justify-space-between">
-                      <div class="d-flex align-center">
-                        <v-icon class="mr-2 text-orange">mdi-cart</v-icon>
-                        <v-chip size="small" color="info">
-                          {{ value.items.length }} item(s)
-                        </v-chip>
-                      </div>
-
-                      <v-menu :close-on-content-click="false" location="end">
-                        <template v-slot:activator="{ props }">
-                          <v-btn v-bind="props" density="compact" color="primary" @click="get_pr(value._id)"> Manage
-                          </v-btn>
-                        </template>
-                        <v-card min-width="300">
-                          <v-list>
-                            <v-list-item title="Manage Purchasing">
-                              <template v-slot:append>
-                                <v-icon color="green darken-4" size="24">mdi-cart</v-icon>
-                              </template>
-                            </v-list-item>
-                          </v-list>
-                          <v-divider></v-divider>
-                          <v-list lines="two" class="elevation-1" density="compact">
-
-                            <v-list-item v-for="item in menu_items" :key="item.value" :title="item.text"
-                              :subtitle="item.subtitle" @click="print_request(item.value)">
-                              <template v-slot:prepend>
-                                <v-icon :color="'primary'" :size="22">{{ item.icon }}</v-icon>
-                              </template>
-                            </v-list-item>
-
-                          </v-list>
-                          <v-card-actions>
-                            <v-spacer />
-                            <v-btn variant="text" color="error">Close</v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-menu>
-                    </v-col>
-
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </template>
-          </commons-sms>
-        </v-sheet>
       </v-col>
 
 
-
     </v-row>
-
-
     <commons-dialog v-model="purchase_request_dialog" max-width="50%" icon="mdi-school"
       title="Purchase Requisition Slip" submitText="Submit" @submit="create_purchase_requisition">
       <v-card-text style="max-height: 70vh; overflow-y: auto;">
         <v-row dense>
-          <!-- Left Panel: Add Item Section -->
           <v-col cols="12">
             <v-card flat>
               <v-card-text>
@@ -197,7 +216,6 @@
                   </v-col>
 
                   <v-divider class="my-3"></v-divider>
-                  <!-- Heading for Item Details Section -->
                   <h4 class="mb-2 text-primary font-weight-bold">Item Details</h4>
 
                   <v-col cols="12">
@@ -218,8 +236,6 @@
                     <v-text-field v-model="newItem.cost" type="number" label="Cost" density="compact" variant="outlined"
                       hide-details />
                   </v-col>
-
-                  <!-- Add Item Button -->
                   <v-col cols="3">
                     <v-btn block color="primary" variant="tonal" prepend-icon="mdi-plus" class="my-1 py-2 rounded-lg"
                       @click="addItem">
@@ -231,11 +247,9 @@
             </v-card>
           </v-col>
 
-          <!-- Right Panel: Display Added Items -->
           <v-col cols="12" v-if="pr.items.length">
             <v-card class="elevation-1">
               <v-card-text>
-                <!-- Heading for Added Items -->
                 <h4 class="mb-2 text-primary font-weight-bold">Added Items</h4>
                 <v-divider class="my-2"></v-divider>
 
@@ -270,11 +284,7 @@
         </v-row>
       </v-card-text>
     </commons-dialog>
-
-
-
-
-  </v-sheet>
+  </div>
 </template>
 
 
@@ -379,24 +389,28 @@ async function create_purchase_requisition() {
 const purchase_request_data = ref([]);
 
 async function get_purchase_request() {
-  const payload = {};
+  const payload: any = {};
+
+
   if (searchData?.value?.project) {
     payload.project = searchData.value.project;
   }
+
   if (searchData?.value?.type) {
-    payload.type = "stock-card"
-    // payload.type = searchData.value.type;
+    payload.type = searchData.value.type;
   }
+
   if (searchData?.value?.year) {
     payload.year = searchData.value.year;
   }
-  console.log("Payloadddd", payload);
 
+  console.log("Payload:", payload);
 
   const { data } = await $rest("purchasing/get-purchase-request", {
     method: "GET",
-    query: Object.keys(payload)?.length ? payload : {},
+    query: payload,
   });
+
   purchase_request_data.value = data;
 }
 
