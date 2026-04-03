@@ -1,260 +1,334 @@
 <template>
+  <div class="ma-4">
+    <v-row no-gutters>
+      <v-col cols="12" class="py-2">
+        <v-row align="center" dense>
+          <v-col cols="12" md="4">
+            <v-select v-model="sup.supplier" label="Supplier" :items="supplier_data" item-title="name" item-value="_id"
+              variant="comfortable" rounded="xl" hide-details density="compact" prepend-inner-icon="mdi-magnify"
+              bg-color="grey-lighten-1" clearable />
+          </v-col>
 
-  <v-sheet class="ma-4">
-    <v-toolbar flat class="py-2" color="transparent">
-      <template v-slot:title>
-        <v-row dense>
-          <v-col cols="12">
-            <h2 class="font-weight-medium text-primary">Master List of External Providers</h2>
-            <small class="font-weight-thin" style="color: #B1D182;">
-              Overview of external providers items and services
-            </small>
+          <v-col cols="12" md="4">
+            <v-select v-model="sup.type" label="Evaluation Type" :items="menu_items" item-title="text"
+              item-value="value" variant="comfortable" rounded="xl" hide-details density="compact"
+              prepend-inner-icon="mdi-filter-variant" bg-color="grey-lighten-1" clearable />
+          </v-col>
+
+          <v-col cols="auto">
+            <v-btn color="success" class="white--text px-6" rounded="xl" elevation="2" @click="get_evaluations()">
+              Filter
+            </v-btn>
+          </v-col>
+          <v-col cols="auto">
+            <v-btn color="blue darken-4" rounded="xl" elevation="2" @click="print_result(sup.type)"
+              class="white--text px-6">
+              Print
+            </v-btn>
+          </v-col>
+          <v-spacer />
+          <v-col cols="12" md="auto" class="px-2 text-right">
+            <v-btn prepend-icon="mdi-plus-circle" @click="supplierDialog = true" color="primary" rounded="xl"
+              elevation="2" size="large" class="px-6">
+              Add Supplier
+            </v-btn>
           </v-col>
         </v-row>
-      </template>
-      <v-spacer></v-spacer>
-      <v-btn>
-        <v-icon class="pr-3" color="#228B22">mdi-database</v-icon>
-        import
-      </v-btn>
-      <v-btn @click="supplierDialog = true" text>
-        <v-icon class="pr-3" color="#228B22">mdi-account</v-icon>
-        Add External Supplier
-      </v-btn>
-      <v-btn @click="supplierInvitationDialog = true" text>
-        <v-icon class="pr-3" color="#228B22">mdi-email</v-icon>
-        Invite Supplier
-      </v-btn>
-    </v-toolbar>
-    <hr class="mb-2" color="#115D33" />
-    <v-row dense>
-      <v-col cols="12" class="d-flex">
-        <v-sheet width="20%" border color="#F9FBE7" min-height="80vh">
-          <v-card-text class="mt-8">
-            <v-row dense>
-
-              <v-col cols="12"> <v-select v-model="sup.supplier" label="Supplier" :items="supplier_data"
-                  item-title="name" item-value="_id" density="compact" variant="outlined" hide-details /></v-col>
-              <v-col cols="12" class="mb-3">
-                <v-select label="Request type" v-model="sup.type" :items="menu_items" item-title="text"
-                  item-value="value" density="compact" variant="outlined" hide-details />
-              </v-col>
-              <v-col cols="12">
-                <v-btn block color="success" class="white--text" @click="get_evaluations()">
-                  Filter
-                </v-btn>
-              </v-col>
-              <v-col cols="12">
-                <v-btn @click="print_result(sup.type)" block color="blue darken-4" class="white--text">
-                  Print
-                </v-btn>
-              </v-col>
-
-            </v-row>
-          </v-card-text>
-        </v-sheet>
-        <v-sheet border width="80%" height="80vh">
-          <commons-sms title="Suppliers" icon="mdi-note-text-outline" :items="supplier_data"
-            :display_types="['grid', 'table']">
-            <template v-slot:table="{ items }">
-              <v-sheet border>
-                <v-data-table :items="supplier_data" :headers="supplier_header">
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn density="compact" color="primary">Actions</v-btn>
-                  </template>
-                </v-data-table>
-              </v-sheet>
-            </template>
-            <template v-slot:item="{ value, index, display }">
-              <v-card class="mx-auto" rounded="lg" color="primary" variant="tonal">
-                <v-card-text>
-                  <v-row no-gutters>
-
-
-                    <v-col cols="12"> Status : <b> {{ value.status ? value.status : 'Nominated'
-                        }}</b></v-col>
-
-                    <v-col cols="12"> Owner: <b>{{ value.owner }}</b></v-col>
-                    <v-col cols="12"> <v-divider class="my-2"></v-divider> </v-col>
-
-                    <v-col cols="12" class="text-uppercase"> <v-icon class="mr-2 text-amber">mdi-cart</v-icon>
-                      {{ value.name }}
-                    </v-col>
-                    <v-col cols="12"> <v-icon class="mr-2 text-blue">mdi-map-marker</v-icon> {{ value.address }}</v-col>
-                    <v-col cols="12" class="d-flex align-center justify-space-between">
-                      <div class="d-flex align-center">
-                        <v-icon class="mr-2 text-red">mdi-email</v-icon> <i class="text-blue">{{ value.email }}</i>
-                      </div>
-
-                      <v-menu :close-on-content-click="false" location="end">
-                        <template v-slot:activator="{ props }">
-                          <v-btn v-bind="props" density="compact" color="primary">Manage</v-btn>
-                        </template>
-                        <v-card min-width="300">
-                          <v-list>
-                            <v-list-item title="Supplier">
-                              <template v-slot:append>
-                                <v-icon color="green darken-4" size="24">mdi-cart</v-icon>
-                              </template>
-                            </v-list-item>
-                          </v-list>
-                          <v-divider></v-divider>
-                          <v-list lines="two" class="elevation-1" density="compact">
-                            <v-list-item v-for="item in menu_items" :key="item.value" :title="item.text"
-                              :subtitle="item.subtitle" @click="handleAction(item, value._id)">
-                              <template v-slot:prepend>
-                                <v-icon color="primary" size="22">{{ item.icon }}</v-icon>
-                              </template>
-                            </v-list-item>
-                          </v-list>
-
-
-
-                          <v-card-actions>
-                            <v-spacer />
-                            <v-btn variant="text" color="error">Close</v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-menu>
-                    </v-col>
-
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </template>
-
-          </commons-sms>
-
-        </v-sheet>
       </v-col>
 
+      <v-col cols="12" class="mt-2">
+        <commons-sms title="Master List of External Providers" subtitle="Overview of external suppliers and services."
+          icon="mdi-account-multiple-outline" :items="supplier_data" :display_types="['grid', 'table']" rounded="xl"
+          elevation="5">
 
+          <template v-slot:table="{ items }">
+            <v-card-text border style="max-height: 80vh; overflow-y: auto;">
+              <v-data-table :items="supplier_data" :headers="supplier_header">
+                <template v-slot:item.status="{ item }">
+                  <v-chip size="small" :color="item.selectable.status === 'Qualified' ? 'success' : 'warning'"
+                    variant="tonal" class="text-capitalize">
+                    {{ item.selectable.status }}
+                  </v-chip>
+                </template>
+                <template v-slot:item.actions="{ item }">
+                  <v-btn density="compact" color="primary" @click="openManageMenu(item)">Actions</v-btn>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </template>
+
+          <template v-slot:item="{ value, index }">
+            <v-card :key="index" class="ma-1 elevation-1" rounded="xl" border="sm"
+              style="border-color: #f0f0f0 !important; transition: transform 0.2s ease-in-out;"
+              @mouseover="hover = index" @mouseout="hover = null"
+              :style="{ transform: hover === index ? 'translateY(-4px)' : 'translateY(0px)' }">
+              <v-list-item class="px-2 pt-4 py-2">
+                <template v-slot:prepend>
+                  <v-avatar color="success" rounded="lg" size="48" class="mr-3">
+                    <v-icon color="white">mdi-account-tie-outline</v-icon>
+                  </v-avatar>
+                </template>
+
+                <v-list-item-title class="text-subtitle-1 font-weight-black text-primary">
+                  {{ value.name }}
+                </v-list-item-title>
+
+                <v-list-item-subtitle class="text-caption d-flex align-center mt-1">
+                  <v-icon size="14" color="indigo" class="mr-1">mdi-map-marker-outline</v-icon>
+                  {{ value.address }}
+                </v-list-item-subtitle>
+
+                <template v-slot:append>
+                  <v-menu :close-on-content-click="false" location="bottom end" transition="scale-transition">
+                    <template v-slot:activator="{ props }">
+                      <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text" color="grey-lighten-1"
+                        density="comfortable" />
+                    </template>
+
+                    <v-card min-width="300" rounded="xl" elevation="12">
+                      <v-list bg-color="success" class="py-2">
+                        <v-list-item title="Manage Supplier" base-color="white">
+                          <template v-slot:append>
+                            <v-icon size="24">mdi-account-check</v-icon>
+                          </template>
+                        </v-list-item>
+                      </v-list>
+
+                      <v-divider />
+
+                      <v-list lines="two" density="compact" class="pa-2">
+                        <v-list-item v-for="item in menu_items" :key="item.value" :title="item.text"
+                          :subtitle="item.subtitle" @click="handleAction(item, value._id)" rounded="md" class="mb-1"
+                          color="primary">
+                          <template v-slot:prepend>
+                            <v-avatar size="32" color="grey-lighten-4" class="mr-2">
+                              <v-icon color="primary" size="20">{{ item.icon }}</v-icon>
+                            </v-avatar>
+                          </template>
+                        </v-list-item>
+                      </v-list>
+
+                      <v-divider />
+
+                      <v-card-actions class="pa-2">
+                        <v-spacer />
+                        <v-btn variant="text" color="error" class="text-none font-weight-bold"
+                          @click="closeMenu">Close</v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-menu>
+                </template>
+              </v-list-item>
+
+              <v-card-text class="px-4 py-2">
+                <div class="d-flex align-center mb-4 bg-grey-lighten-3 pa-2 rounded-lg"
+                  style="border-left: 4px solid #43A047;">
+                  <v-icon size="18" class="mr-2 text-success">mdi-account-circle-outline</v-icon>
+                  <span class="text-body-2 text-grey-darken-3">
+                    Owner: <strong>{{ value.owner }}</strong>
+                  </span>
+                </div>
+
+                <div class="mb-1 px-1">
+                  <div class="d-flex align-center text-body-2 mb-1">
+                    <v-icon class="mr-2 text-success" size="18">mdi-briefcase-outline</v-icon>
+                    <span class="font-weight-bold text-grey-darken-4">{{ value.nature }}</span>
+                  </div>
+                  <div class="d-flex align-center text-caption text-grey-darken-1">
+                    <v-icon class="mr-2 text-blue-darken-1" size="18">mdi-email-outline</v-icon>
+                    {{ value.email }}
+                  </div>
+                </div>
+              </v-card-text>
+
+              <v-divider />
+              <v-card-actions class="bg-success px-4 py-2" style="min-height: 48px;">
+                <span class="text-button text-white" style="letter-spacing: 1px !important;">STATUS</span>
+                <v-spacer />
+                <v-chip size="small" color="white" variant="flat"
+                  class="font-weight-black text-success px-3 text-button">
+                  {{ value.status || 'Nominated' }}
+                </v-chip>
+              </v-card-actions>
+            </v-card>
+          </template>
+        </commons-sms>
+      </v-col>
     </v-row>
 
 
-    <v-dialog v-model="supplierDialog" max-width="600">
-      <v-card>
-        <v-card-title> Supplier Information Sheet</v-card-title>
-        <v-card-text>
+    <v-dialog v-model="supplierDialog" max-width="700" persistent>
+      <v-card rounded="xl" class="pa-4">
+        <v-card-title class="d-flex align-center pt-4 px-4 pb-0">
+          <v-avatar color="success" variant="tonal" rounded="lg" size="54" class="mr-4">
+            <v-icon size="32">mdi-account-tie</v-icon>
+          </v-avatar>
+          <div>
+            <div class="text-h5 font-weight-black text-primary">
+              Add External Supplier
+            </div>
+            <div class="text-caption text-grey-darken-1">
+              Register a new supplier in the system.
+            </div>
+          </div>
+          <v-spacer />
+          <v-btn icon="mdi-close" variant="text" color="grey-lighten-1" @click="supplierDialog = false" />
+        </v-card-title>
+
+        <v-card-text class="mt-6">
           <v-row dense>
             <v-col cols="12" md="6">
-              <v-text-field label="Company Name*" v-model="supplier.name" hide-details />
+              <v-text-field label="Company Name*" v-model="supplier.name" variant="underlined" color="primary"
+                placeholder="Enter company name" hide-details />
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field label="Owner*" v-model="supplier.owner" hide-details />
+              <v-text-field label="Owner*" v-model="supplier.owner" variant="underlined" color="primary"
+                placeholder="Enter owner name" hide-details />
             </v-col>
 
             <v-col cols="12">
-              <v-text-field label="Address*" v-model="supplier.address" hide-details />
+              <v-text-field label="Address*" v-model="supplier.address" variant="underlined" color="primary"
+                prepend-inner-icon="mdi-map-marker-outline" hide-details />
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field label="Nature of Business*" v-model="supplier.nature" hide-details />
+              <v-text-field label="Nature of Business*" v-model="supplier.nature" variant="underlined" color="primary"
+                placeholder="e.g., Construction Materials" hide-details />
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field label="Email*" v-model="supplier.email" type="email" hide-details />
+              <v-text-field label="Email*" v-model="supplier.email" type="email" variant="underlined" color="primary"
+                placeholder="supplier@company.com" hide-details />
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field label="Contact Number*" v-model="supplier.contact_number" hide-details />
+              <v-text-field label="Contact Number*" v-model="supplier.contact_number" variant="underlined"
+                color="primary" hide-details />
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field label="Contact Person*" v-model="supplier.contact_person" required />
+              <v-text-field label="Contact Person*" v-model="supplier.contact_person" variant="underlined"
+                color="primary" hide-details />
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-combobox label="Terms of Payment*" v-model="supplier.terms" :items="termsOptions" hide-details />
+              <v-combobox label="Terms of Payment*" v-model="supplier.terms" :items="termsOptions" variant="underlined"
+                color="primary" hide-details />
             </v-col>
 
             <v-col cols="12" md="6">
               <v-combobox label="Status*" v-model="supplier.status" :items="['Nominated', 'Qualified', 'Outsource']"
-                hide-details />
+                variant="underlined" color="primary" hide-details />
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-combobox label="Year Accredited" v-model="supplier.accredited" required :items="[2025, 2024]" />
+              <v-combobox label="Year Accredited" v-model="supplier.accredited" :items="[2025, 2024]"
+                variant="underlined" color="primary" hide-details />
             </v-col>
 
             <v-col cols="12">
               <v-combobox label="Products/Services" v-model="supplier.products" :items="['Metal',
-                'Electrical',
-                'Paints',
-                'Plumbing',
-                'Construction Materials',
-                'Tools',
-                'Heavy Equipment',
-                'Insulation',
-                'HVAC',
-                'Landscaping']" multiple chips />
+                'Electrical', 'Paints', 'Plumbing', 'Construction Materials', 'Tools', 'Heavy Equipment',
+                'Insulation', 'HVAC', 'Landscaping']" multiple chips variant="underlined" color="primary" />
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-file-input label="Company Profile" v-model="supplier.company_profile" show-size></v-file-input>
+              <v-file-input label="Company Profile" v-model="supplier.company_profile" show-size variant="underlined" />
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-file-input label="Product Catalog" v-model="supplier.catalog" show-size></v-file-input>
+              <v-file-input label="Product Catalog" v-model="supplier.catalog" show-size variant="underlined" />
             </v-col>
           </v-row>
         </v-card-text>
 
-        <v-divider></v-divider>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-
-          <v-btn text="Close" variant="plain"></v-btn>
-          <v-btn color="primary" @click="create_supplier" text="Save" variant="tonal"></v-btn>
+        <v-card-actions class="px-6 pb-6 pt-4">
+          <v-spacer />
+          <v-btn color="grey-lighten-1" variant="outlined" size="large" class="px-10 rounded-pill font-weight-bold"
+            @click="supplierDialog = false">
+            Cancel
+          </v-btn>
+          <v-btn color="primary" variant="elevated" size="large" class="text-none px-10 rounded-pill font-weight-bold"
+            elevation="4" @click="create_supplier">
+            SAVE SUPPLIER
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="supplierInvitationDialog" max-width="450">
-      <v-card title="Supplier Invitation Form" subtitle="Suppliers receives an email to complete information sheet.">
-        <v-card-text>
+
+    <v-dialog v-model="supplierInvitationDialog" max-width="500" persistent>
+      <v-card rounded="xl" class="pa-4">
+        <v-card-title class="d-flex align-center pt-4 px-4 pb-0">
+          <v-avatar color="primary" variant="tonal" rounded="lg" size="54" class="mr-4">
+            <v-icon size="32">mdi-email-outline</v-icon>
+          </v-avatar>
+          <div>
+            <div class="text-h5 font-weight-black text-primary">
+              Invite Supplier
+            </div>
+            <div class="text-caption text-grey-darken-1">
+              Send an invitation email to complete information.
+            </div>
+          </div>
+          <v-spacer />
+          <v-btn icon="mdi-close" variant="text" color="grey-lighten-1" @click="supplierInvitationDialog = false" />
+        </v-card-title>
+
+        <v-card-text class="mt-6">
           <v-row dense>
-            <v-col cols="12" md="12">
-              <v-text-field label="Supplier Email" required />
+            <v-col cols="12">
+              <v-text-field label="Supplier Email*" variant="underlined" color="primary"
+                placeholder="supplier@company.com" hide-details />
             </v-col>
           </v-row>
         </v-card-text>
-        <v-divider></v-divider>
-        <v-card-actions>
 
-          <v-btn block color="primary" variant="default"> Send Invitation</v-btn>
+        <v-card-actions class="px-6 pb-6 pt-4">
+          <v-spacer />
+          <v-btn color="grey-lighten-1" variant="outlined" size="large" class="px-10 rounded-pill font-weight-bold"
+            @click="supplierInvitationDialog = false">
+            Cancel
+          </v-btn>
+          <v-btn color="primary" variant="elevated" size="large" class="text-none px-10 rounded-pill font-weight-bold"
+            elevation="4">
+            SEND INVITATION
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <commons-dialog v-model="evaluation_dialog" max-width="40%" icon="mdi-school"
-      title="External Provider Evaluation Form" submitText="Submit" @submit="submit_evaluation">
-      <v-card-text style="max-height: 70vh; overflow-y: auto;">
 
+
+    <commons-dialog v-model="evaluation_dialog" max-width="60%" icon="mdi-clipboard-check-outline"
+      title="External Provider Evaluation Form" submitText="Submit Evaluation" @submit="submit_evaluation">
+      <v-card-text style="max-height: 70vh; overflow-y: auto;">
         <v-row dense>
           <v-col cols="12">
-            <v-text-field label="Date" v-model="evaluation_criteria.date" hide-details type="date" />
+            <v-text-field label="Evaluation Date" v-model="evaluation_criteria.date" type="date" variant="underlined"
+              color="primary" hide-details />
           </v-col>
           <v-col cols="6">
-            <v-text-field label="From" v-model="evaluation_criteria.from" hide-details type="month" />
+            <v-text-field label="Period From" v-model="evaluation_criteria.from" type="month" variant="underlined"
+              color="primary" hide-details />
           </v-col>
           <v-col cols="6">
-            <v-text-field label="To" v-model="evaluation_criteria.to" hide-details type="month" />
+            <v-text-field label="Period To" v-model="evaluation_criteria.to" type="month" variant="underlined"
+              color="primary" hide-details />
           </v-col>
           <v-col cols="12">
-            <v-card class="pa-2" variant="outlined" color="grey">
+            <v-card class="pa-4" variant="outlined" color="grey">
               <v-row dense>
-                <v-col cols="5" class="font-weight-bold text-primary"> <v-icon class="mr-2"
-                    color="primary">mdi-clipboard-text-outline</v-icon>CRITERIA</v-col>
+                <v-col cols="5" class="font-weight-bold text-primary">
+                  <v-icon class="mr-2" color="primary">mdi-clipboard-text-outline</v-icon>CRITERIA
+                </v-col>
                 <v-col cols="7" class="text-center font-weight-bold">
                   <v-row no-gutters>
-                    <v-col cols="2" class="text-end  text-primary">5</v-col>
-                    <v-col cols="2" class="text-end  text-primary">4</v-col>
-                    <v-col cols="2" class="text-end  text-primary">3</v-col>
-                    <v-col cols="2" class="text-end  text-primary">2</v-col>
-                    <v-col cols="2" class="text-end  text-primary">1</v-col>
-                    <v-col cols="2"></v-col>
+                    <v-col cols="2" class="text-end text-primary">5</v-col>
+                    <v-col cols="2" class="text-end text-primary">4</v-col>
+                    <v-col cols="2" class="text-end text-primary">3</v-col>
+                    <v-col cols="2" class="text-end text-primary">2</v-col>
+                    <v-col cols="2" class="text-end text-primary">1</v-col>
                   </v-row>
                 </v-col>
               </v-row>
@@ -267,35 +341,30 @@
                       {{ i + 1 }}. {{ item.label }}
                     </v-col>
                     <v-col cols="7">
-                      <v-row no-gutters>
-
-                        <v-radio-group v-model="item.rating" class="d-flex" inline>
-                          <v-radio class="px-2" :value="5" color="primary" />
-                          <v-radio class="px-2" :value="4" color="primary" />
-                          <v-radio class="px-2" :value="3" color="primary" />
-                          <v-radio class="px-2" :value="2" color="primary" />
-                          <v-radio class="px-2" :value="1" color="primary" />
-                        </v-radio-group> </v-row>
+                      <v-radio-group v-model="item.rating" class="d-flex" inline>
+                        <v-radio class="px-2" :value="5" color="primary" />
+                        <v-radio class="px-2" :value="4" color="primary" />
+                        <v-radio class="px-2" :value="3" color="primary" />
+                        <v-radio class="px-2" :value="2" color="primary" />
+                        <v-radio class="px-2" :value="1" color="primary" />
+                      </v-radio-group>
                     </v-col>
                   </v-row>
                   <v-textarea v-model="item.remarks" label="Remarks, if any" rows="2" auto-grow variant="outlined"
                     class="mt-2" />
                 </v-card-text>
               </v-card>
-
             </v-card>
           </v-col>
           <v-col cols="12">
-            <v-textarea v-model="evaluation_criteria.recommendations" label="Recommendation/s" rows="3" auto-grow
+            <v-textarea v-model="evaluation_criteria.recommendations" label="Recommendations" rows="3" auto-grow
               variant="outlined" />
           </v-col>
         </v-row>
       </v-card-text>
     </commons-dialog>
-
-  </v-sheet>
+  </div>
 </template>
-
 
 <script lang="ts" setup>
 import useAuth from "~/store/auth";
@@ -318,7 +387,7 @@ definePageMeta({ layout: "std-systems" });
 const evaluationStore = supplierEvaluations()
 const supplierInvitationDialog = ref(false)
 const supplierDialog = ref(false);
-
+const hover = ref<number | null>(null);
 
 const evaluation_dialog = ref(false)
 
@@ -482,6 +551,10 @@ const handleAction = (item: any, id: any) => {
   } else if (item.action === "open_evaluation_form") {
     open_evaluation_form(id);
   }
+};
+
+const closeMenu = () => {
+  // Menu closes automatically with :close-on-content-click="false"
 };
 
 function open_evaluation_form(id: any) {

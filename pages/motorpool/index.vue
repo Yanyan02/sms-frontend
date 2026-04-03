@@ -1,281 +1,335 @@
 <template>
+  <div class="ma-4">
+    <v-row no-gutters>
+      <v-col cols="12" class="py-2">
+        <v-row align="center" dense>
+          <v-col cols="12" md="3">
+            <v-select :items="['2025']" label="Year" variant="comfortable" rounded="xl" hide-details density="compact"
+              prepend-inner-icon="mdi-calendar" bg-color="grey-lighten-1" clearable />
+          </v-col>
 
-  <v-sheet class="ma-4">
-    <v-toolbar flat class="py-2" color="transparent">
-      <template v-slot:title>
-        <v-row dense>
-          <v-col cols="12">
-            <h2 class="font-weight-medium text-primary"> Vehicle and Heavy Equipment</h2>
-            <small class="font-weight-thin" style="color: #B1D182;">
-              Overview of vehicles and heavy equipment.
-            </small>
+          <v-col cols="12" md="3">
+            <v-select label="Project" item-title="name" item-value="_id" :items="project_data" variant="comfortable"
+              rounded="xl" hide-details density="compact" prepend-inner-icon="mdi-folder" bg-color="grey-lighten-1"
+              clearable />
+          </v-col>
+
+          <v-col cols="12" md="3">
+            <v-select label="Equipment Type" :items="['calibration', 'preventive-maintenance']" variant="comfortable"
+              rounded="xl" hide-details density="compact" prepend-inner-icon="mdi-filter-variant"
+              bg-color="grey-lighten-1" clearable />
+          </v-col>
+
+          <v-col cols="auto">
+            <v-btn color="success" class="white--text px-6" rounded="xl" elevation="2">
+              Filter
+            </v-btn>
+          </v-col>
+          <v-col cols="auto">
+            <v-btn color="primary" rounded="xl" elevation="2" class="white--text px-6">
+              Print
+            </v-btn>
+          </v-col>
+          <v-spacer />
+          <v-col cols="12" md="auto" class="px-2 text-right">
+            <v-btn prepend-icon="mdi-plus-circle" @click="vehicle_dialog = true" color="primary" rounded="xl"
+              elevation="2" size="large" class="px-6">
+              Add Vehicle
+            </v-btn>
           </v-col>
         </v-row>
-      </template>
-      <v-spacer></v-spacer>
-      <v-btn @click="route_trip_ticket" color="success" class="text-white" prepend-icon="mdi-car-side" variant="tonal"
-        rounded>
-        Trip Tickets
-      </v-btn>
-
-      <v-btn>
-        <v-icon class="pr-3" color="#228B22">mdi-database</v-icon>
-        import
-      </v-btn>
-
-    </v-toolbar>
-    <hr class="mb-2" color="#115D33" />
-
-    <v-row dense>
-      <v-col cols="12" class="d-flex">
-        <v-sheet width="20%" border color="#F9FBE7" min-height="80vh">
-          <v-card-text class="mt-8">
-            <v-row dense>
-              <v-col cols="12">
-                <v-select class="mb-2" :items="['2025']" label="Year" outlined hide-details clearable></v-select>
-                <v-select class="mb-2" label="Project" item-title="name" item-value="_id" :items="project_data"
-                  density="compact" variant="outlined" hide-details clearable />
-                <v-select label="Request type" :items="['calibration', 'preventive-maintenance']" item-title="text"
-                  item-value="value" density="compact" variant="outlined" hide-details clearable />
-              </v-col>
-
-              <v-col cols="12">
-                <v-btn block color="success" class="white--text">
-                  Filter
-                </v-btn>
-              </v-col>
-              <v-col cols="12">
-                <v-btn block color="blue darken-4" class="white--text">
-                  Print
-                </v-btn>
-              </v-col>
-              <v-col cols="12">
-                <v-btn block color="amber" @click="vehicle_dialog = true">
-                  Create
-                </v-btn>
-              </v-col>
-
-            </v-row>
-          </v-card-text>
-        </v-sheet>
-        <v-sheet border width="80%" height="80vh">
-          <commons-sms title="Tools and Vehicle" icon="mdi-note-text-outline" :items="vehicle_data"
-            :display_types="['table', 'grid']">
-            <template v-slot:table="{ items }">
-              <v-sheet border>
-                <v-data-table :items="vehicle_data" :headers="vehicle_header">
-                  <template v-slot:item.type="{ item }">
-                    <v-chip class="text-capitalize" color="primary" density="compact" variant="outlined">
-                      {{ item.selectable.type }}
-                    </v-chip>
-                  </template>
-
-                  <template v-slot:item.pm_schedule="{ item }">
-                    <v-chip color="blue darken-4" density="compact" variant="outlined">
-                      {{ item.selectable.pm_schedule }}
-                    </v-chip>
-                  </template>
-
-                  <template v-slot:item.status="{ item }">
-                    <v-chip
-                      :color="['breakdown', 'undermaintenance'].includes(item.selectable.status) ? 'error' : 'primary'"
-                      density="compact" variant="tonal">
-                      {{ item.selectable.status }}
-                    </v-chip>
-                  </template>
-
-                  <template v-slot:item.actions="{ item }">
-                    <v-menu v-model="menuOpen[item.id]" :close-on-content-click="false" offset-y>
-                      <template #activator="{ props }">
-                        <v-btn color="primary" density="compact" v-bind="props">Actions</v-btn>
-                      </template>
-
-                      <v-card width="auto">
-                        <v-list v-model:opened="open[item.id]" lines="two" density="compact">
-                          <v-list-group v-for="(menu, i) in menu_items.filter(m => m.children && m.children.length > 0)"
-                            :key="i" :value="menu.text">
-                            <template v-slot:activator="{ props }">
-                              <v-list-item v-bind="props" :prepend-icon="menu.icon" :title="menu.text" />
-                            </template>
-
-                            <v-list-item v-for="(child, j) in menu.children" :key="j" :title="child.text"
-                              :prepend-icon="child.icon" @click="handleMenuClick(child.value, item.id)" />
-                          </v-list-group>
-                        </v-list>
-                      </v-card>
-                    </v-menu>
-                  </template>
-
-
-                </v-data-table>
-                <template v-slot:table="{ items }">
-                  <v-data-table :items="items" :headers="vehicle_header">
-                    <!-- Don't use vehicle_data here again -->
-                    <template v-slot:item.actions="{ item }">
-                      <v-menu v-model="menuOpen[item.id]" :close-on-content-click="false" offset-y>
-                        <template #activator="{ props }">
-                          <v-btn color="primary" density="compact" v-bind="props">Actions</v-btn>
-                        </template>
-
-                        <v-card width="auto">
-                          <v-list v-model:opened="open[item.id]" lines="two" density="compact">
-                            <v-list-group v-for="(menu, i) in menu_items.filter(m => m.children?.length)" :key="i"
-                              :value="menu.text">
-                              <template v-slot:activator="{ props }">
-                                <v-list-item v-bind="props" :prepend-icon="menu.icon" :title="menu.text" />
-                              </template>
-                              <v-list-item v-for="(child, j) in menu.children" :key="j" :title="child.text"
-                                :prepend-icon="child.icon" @click="handleMenuClick(child.value, item.id)" />
-                            </v-list-group>
-                          </v-list>
-                        </v-card>
-                      </v-menu>
-                    </template>
-                  </v-data-table>
-                </template>
-
-              </v-sheet>
-            </template>
-
-            <template v-slot:item="{ value }">
-              <v-card class="mx-auto" rounded="lg" color="primary" variant="tonal">
-                <v-card-text>
-                  <v-row no-gutters justify="end">
-                    <v-col cols="12" class="d-flex align-end">
-                      PM Schedule:
-                      <v-chip class="mx-2 mb-1 text-uppercase" density="compact" color="amber" variant="outlined">
-                        {{ value.pm_schedule }}
-                      </v-chip>
-                    </v-col>
-                    <v-col cols="12" class="d-flex">Name: <b>{{ value.name }} {{ value.brand }}</b></v-col>
-                    <v-col cols="12">Plate/ID No: <b>{{ value.id }}</b></v-col>
-                    <v-col cols="12">Project Assign: {{ value.project.name }}</v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </template>
-          </commons-sms>
-        </v-sheet>
       </v-col>
 
+      <v-col cols="12" class="mt-2">
+        <commons-sms title="Vehicle and Heavy Equipment" subtitle="Overview of vehicles and equipment inventory."
+          icon="mdi-car-side" :items="vehicle_data" :display_types="['grid', 'table']" rounded="xl" elevation="5">
 
+          <template v-slot:table="{ items }">
+            <v-card-text border style="max-height: 80vh; overflow-y: auto;">
+              <v-data-table :items="vehicle_data" :headers="vehicle_header">
+                <template v-slot:item.type="{ item }">
+                  <v-chip class="text-capitalize" color="primary" density="compact" variant="tonal">
+                    {{ item.selectable.type }}
+                  </v-chip>
+                </template>
 
+                <template v-slot:item.pm_schedule="{ item }">
+                  <v-chip color="primary" density="compact" variant="tonal">
+                    {{ item.selectable.pm_schedule }}
+                  </v-chip>
+                </template>
+
+                <template v-slot:item.status="{ item }">
+                  <v-chip
+                    :color="['breakdown', 'undermaintenance'].includes(item.selectable.status) ? 'error' : 'primary'"
+                    density="compact" variant="tonal">
+                    {{ item.selectable.status }}
+                  </v-chip>
+                </template>
+
+                <template v-slot:item.actions="{ item }">
+                  <v-btn density="compact" color="primary">Actions</v-btn>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </template>
+
+          <template v-slot:item="{ value, index }">
+            <v-card :key="index" class="ma-1 elevation-1" rounded="xl" border="sm"
+              style="border-color: #f0f0f0 !important; transition: transform 0.2s ease-in-out;"
+              @mouseover="hover = index" @mouseout="hover = null"
+              :style="{ transform: hover === index ? 'translateY(-4px)' : 'translateY(0px)' }">
+              <v-list-item class="px-2 pt-4 py-2">
+                <template v-slot:prepend>
+                  <v-avatar color="primary" rounded="lg" size="48" class="mr-3">
+                    <v-icon color="white">{{ value.type === 'vehicle' ? 'mdi-car-side' : 'mdi-cog' }}</v-icon>
+                  </v-avatar>
+                </template>
+
+                <v-list-item-title class="text-subtitle-1 font-weight-black text-primary">
+                  {{ value.name }} {{ value.brand }}
+                </v-list-item-title>
+
+                <v-list-item-subtitle class="text-caption d-flex align-center mt-1">
+                  <v-icon size="14" color="indigo" class="mr-1">mdi-identifier</v-icon>
+                  {{ value.id }}
+                </v-list-item-subtitle>
+
+                <template v-slot:append>
+                  <v-menu :close-on-content-click="false" location="bottom end" transition="scale-transition">
+                    <template v-slot:activator="{ props }">
+                      <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text" color="grey-lighten-1"
+                        density="comfortable" />
+                    </template>
+
+                    <v-card min-width="300" rounded="xl" elevation="12">
+                      <v-list bg-color="primary" class="py-2">
+                        <v-list-item title="Manage Equipment" base-color="white">
+                          <template v-slot:append>
+                            <v-icon size="24">mdi-tools</v-icon>
+                          </template>
+                        </v-list-item>
+                      </v-list>
+
+                      <v-divider />
+
+                      <v-list lines="two" density="compact" class="pa-2">
+                        <v-list-group v-for="item in menu_items" :key="item.text" :value="item.text">
+                          <template v-slot:activator="{ props }">
+                            <v-list-item v-bind="props" :prepend-icon="item.icon" :title="item.text" />
+                          </template>
+
+                          <v-list-item v-for="(child, j) in item.children" :key="j" :title="child.text"
+                            :prepend-icon="child.icon" @click="handleMenuClick(child.value, value._id)" rounded="md"
+                            class="mb-1" color="primary">
+                            <template v-slot:prepend>
+                              <v-avatar size="32" color="grey-lighten-4" class="mr-2">
+                                <v-icon color="primary" size="20">{{ child.icon }}</v-icon>
+                              </v-avatar>
+                            </template>
+                          </v-list-item>
+                        </v-list-group>
+                      </v-list>
+
+                      <v-divider />
+
+                      <v-card-actions class="pa-2">
+                        <v-spacer />
+                        <v-btn variant="text" color="error" class="text-none font-weight-bold">Close</v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-menu>
+                </template>
+              </v-list-item>
+
+              <v-card-text class="px-4 py-2">
+                <div class="d-flex align-center mb-4 bg-grey-lighten-3 pa-2 rounded-lg"
+                  style="border-left: 4px solid #0288D1;">
+                  <v-icon size="18" class="mr-2 text-info">mdi-information-outline</v-icon>
+                  <span class="text-body-2 text-grey-darken-3">
+                    {{ value.make }} - <strong>{{ value.model }}</strong>
+                  </span>
+                </div>
+
+                <div class="mb-1 px-1">
+                  <div class="d-flex align-center text-body-2 mb-1">
+                    <v-icon class="mr-2 text-info" size="18">mdi-wrench-clock</v-icon>
+                    <span class="font-weight-bold text-grey-darken-4">{{ value.pm_schedule }}</span>
+                  </div>
+                  <div class="d-flex align-center text-caption text-grey-darken-1">
+                    <v-icon class="mr-2 text-blue-darken-1" size="18">mdi-folder-outline</v-icon>
+                    {{ value.project?.name || 'Unassigned' }}
+                  </div>
+                </div>
+              </v-card-text>
+
+              <v-divider />
+              <v-card-actions class="bg-primary px-4 py-2" style="min-height: 48px;">
+                <span class="text-button text-white" style="letter-spacing: 1px !important;">TYPE</span>
+                <v-spacer />
+                <v-chip size="small" color="white" variant="flat"
+                  class="font-weight-black text-info px-3 text-button text-capitalize">
+                  {{ value.type }}
+                </v-chip>
+              </v-card-actions>
+            </v-card>
+          </template>
+        </commons-sms>
+      </v-col>
     </v-row>
 
-    <commons-dialog v-model="vehicle_dialog" max-width="600" icon="mdi-school"
-      title="Vehicle / Heavy Equipment Information" submitText="Submit" @submit="create_vehicle">
-      <v-card-text style="max-height: 70vh; overflow-y: auto;">
-        <v-container fluid>
-          <!-- Vehicle Type -->
-          <v-row dense>
-            <v-col cols="12">
-              <p class="text-subtitle- mb-1 font-weight-bold">
-                Select Vehicle Type</p>
-              <v-radio-group v-model="vehicle.type" density="compact" inline hide-details>
-                <v-radio class="pr-2" label="Equipment" value="equipment" color="primary" />
-                <v-radio label="Vehicle" value="vehicle" color="primary" />
-              </v-radio-group>
-            </v-col>
-          </v-row>
-          <!-- Basic Info -->
-          <hr class="my-3" color="primary" />
-          <v-row dense>
-            <v-col cols="6">
-              <v-text-field v-model="vehicle.name" label="Vehicle Name" density="compact" variant="outlined"
-                hide-details />
-            </v-col>
+    <!-- Add Vehicle Dialog -->
+    <v-dialog v-model="vehicle_dialog" max-width="800" persistent>
+      <v-card rounded="xl" class="pa-4">
+        <v-card-title class="d-flex align-center pt-4 px-4 pb-0">
+          <v-avatar color="info" variant="tonal" rounded="lg" size="54" class="mr-4">
+            <v-icon size="32">mdi-car-side</v-icon>
+          </v-avatar>
+          <div>
+            <div class="text-h5 font-weight-black text-primary">
+              Register Vehicle/Equipment
+            </div>
+            <div class="text-caption text-grey-darken-1">
+              Add a new vehicle or equipment to the motorpool inventory.
+            </div>
+          </div>
+          <v-spacer />
+          <v-btn icon="mdi-close" variant="text" color="grey-lighten-1" @click="vehicle_dialog = false" />
+        </v-card-title>
 
-            <v-col cols="6">
-              <v-text-field v-model="vehicle.id" label="Vehicle ID" density="compact" variant="outlined" hide-details />
-            </v-col>
+        <v-card-text class="mt-6">
+          <v-container fluid>
+            <!-- Vehicle Type -->
+            <v-row dense>
+              <v-col cols="12">
+                <p class="text-subtitle- mb-1 font-weight-bold">Select Type</p>
+                <v-radio-group v-model="vehicle.type" density="compact" inline hide-details>
+                  <v-radio class="pr-2" label="Equipment" value="equipment" color="primary" />
+                  <v-radio label="Vehicle" value="vehicle" color="primary" />
+                </v-radio-group>
+              </v-col>
+            </v-row>
 
-            <v-col cols="6">
-              <v-text-field v-model="vehicle.make" label="Make" density="compact" variant="outlined" hide-details />
-            </v-col>
+            <!-- Basic Info -->
+            <v-divider class="my-4"></v-divider>
+            <v-row dense>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="vehicle.name" label="Vehicle Name" variant="underlined" color="primary"
+                  density="compact" hide-details />
+              </v-col>
 
-            <v-col cols="6">
-              <v-text-field v-model="vehicle.serial_no" label="Serial Number" density="compact" variant="outlined"
-                hide-details />
-            </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="vehicle.id" label="Vehicle ID" variant="underlined" color="primary"
+                  density="compact" hide-details />
+              </v-col>
 
-            <v-col cols="6">
-              <v-text-field v-model="vehicle.brand" label="Brand" density="compact" variant="outlined" hide-details />
-            </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="vehicle.make" label="Make" variant="underlined" color="primary" density="compact"
+                  hide-details />
+              </v-col>
 
-            <v-col cols="6">
-              <v-text-field v-model="vehicle.model" label="Model" density="compact" variant="outlined" hide-details />
-            </v-col>
-          </v-row>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="vehicle.serial_no" label="Serial Number" variant="underlined" color="primary"
+                  density="compact" hide-details />
+              </v-col>
 
-          <hr class="my-3" color="primary" />
+              <v-col cols="12" md="6">
+                <v-text-field v-model="vehicle.brand" label="Brand" variant="underlined" color="primary"
+                  density="compact" hide-details />
+              </v-col>
 
-          <v-row dense>
-            <!-- <v-col cols="6">
-              <v-select v-model="vehicle.supplier" label="Supplier" density="compact" variant="outlined" hide-details />
-            </v-col> -->
+              <v-col cols="12" md="6">
+                <v-text-field v-model="vehicle.model" label="Model" variant="underlined" color="primary"
+                  density="compact" hide-details />
+              </v-col>
+            </v-row>
 
-            <v-col cols="6">
-              <v-select v-model="vehicle.project" :items="project_data" label="Project" item-title="name"
-                item-value="_id" density="compact" variant="outlined" clearable />
-            </v-col>
+            <v-divider class="my-4"></v-divider>
 
-            <v-col cols="6">
-              <v-text-field v-model="vehicle.other" label="Other Information" density="compact" variant="outlined" />
-            </v-col>
+            <v-row dense>
+              <v-col cols="12" md="6">
+                <v-select v-model="vehicle.project" :items="project_data" label="Project Assignment" item-title="name"
+                  item-value="_id" density="compact" variant="underlined" color="primary" clearable />
+              </v-col>
 
-            <v-col cols="6">
-              <v-text-field v-model="vehicle.date_purchased" label="Date Purchased" type="date" density="compact"
-                variant="outlined" hide-details />
-            </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="vehicle.date_purchased" label="Date Purchased" type="date" density="compact"
+                  variant="underlined" color="primary" hide-details />
+              </v-col>
 
-            <v-col cols="6">
-              <v-select v-model="vehicle.pm_schedule" label="PM Schedule" density="compact" variant="outlined"
-                :items="['Annual', 'Semi-Annual', 'Quarterly', 'Monthly', 'Weekly', 'Daily']" hide-details />
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-    </commons-dialog>
-    <commons-dialog v-model="calibration_dialog" max-width="400" icon="mdi-school" title="Calibration"
+              <v-col cols="12" md="6">
+                <v-select v-model="vehicle.pm_schedule" label="PM Schedule" density="compact" variant="underlined"
+                  color="primary" :items="['Annual', 'Semi-Annual', 'Quarterly', 'Monthly', 'Weekly', 'Daily']"
+                  hide-details />
+              </v-col>
+
+              <v-col cols="12" md="6">
+                <v-text-field v-model="vehicle.other" label="Other Information" variant="underlined" color="primary"
+                  density="compact" />
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions class="px-6 pb-6 pt-4">
+          <v-spacer />
+          <v-btn color="grey-lighten-1" variant="outlined" size="large" class="px-10 rounded-pill font-weight-bold"
+            @click="vehicle_dialog = false">
+            Cancel
+          </v-btn>
+          <v-btn color="primary" variant="elevated" size="large" class="text-none px-10 rounded-pill font-weight-bold"
+            elevation="4" @click="create_vehicle">
+            SAVE VEHICLE
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Calibration Dialog -->
+    <commons-dialog v-model="calibration_dialog" max-width="500" icon="mdi-tune" title="Equipment Calibration"
       submitText="Submit" @submit="">
       <v-card-text>
         <v-row>
-          <v-col cols="12"> <v-text-field label="Year" hide-details /></v-col>
-          <v-col cols="6"> <v-text-field label="Plan" type="date" /></v-col>
-          <v-col cols="6"> <v-text-field label="Actual" type="date" /></v-col>
+          <v-col cols="12">
+            <v-text-field label="Year" variant="underlined" color="primary" hide-details />
+          </v-col>
+          <v-col cols="6">
+            <v-text-field label="Planned Date" type="date" variant="underlined" color="primary" />
+          </v-col>
+          <v-col cols="6">
+            <v-text-field label="Actual Date" type="date" variant="underlined" color="primary" />
+          </v-col>
         </v-row>
       </v-card-text>
     </commons-dialog>
-    <commons-dialog v-model="pm_dialog" max-width="700" icon="mdi-tune" title="Preventive Maintenance Checklist"
+
+    <!-- Preventive Maintenance Dialog -->
+    <commons-dialog v-model="pm_dialog" max-width="800" icon="mdi-wrench-clock" title="Preventive Maintenance Checklist"
       submitText="Submit" @submit="">
       <v-card-text style="max-height: 80vh; overflow-y: auto;">
         <!-- Legend -->
-        <v-alert class="pa-5" variant="tonal" color="info" border closable>
+        <v-alert class="pa-4" variant="tonal" color="info" border>
           <v-row no-gutters class="ml-2">
-            <v-col cols="12" class="pb-1" style="font-size: 10px;">Legend:</v-col>
-            <v-col cols="6" class="py-1 d-flex align-center" style="font-size: 10px;">
-              <v-chip color="blue" variant="outlined" density="compact" class="px-4 mr-3"
-                style="font-size: 10px; height: 18px;">NA</v-chip>
+            <v-col cols="12" class="pb-2 font-weight-bold text-primary">Legend:</v-col>
+            <v-col cols="6" class="py-1 d-flex align-center" style="font-size: 0.875rem;">
+              <v-chip color="blue" variant="tonal" density="compact" size="small" class="mr-3">NA</v-chip>
               Not Applicable
             </v-col>
-            <v-col cols="6" class="py-0 d-flex align-center" style="font-size: 10px;">
-              <v-chip color="green" variant="outlined" density="compact" class="px-4 mr-4"
-                style="font-size: 10px; height: 18px;">P</v-chip>
-              Passed in good condition
+            <v-col cols="6" class="py-1 d-flex align-center" style="font-size: 0.875rem;">
+              <v-chip color="green" variant="tonal" density="compact" size="small" class="mr-3">P</v-chip>
+              Passed
             </v-col>
-            <v-col cols="6" class="py-0 d-flex align-center" style="font-size: 10px;">
-              <v-chip color="orange" variant="outlined" density="compact" class="px-4 mr-4"
-                style="font-size: 10px; height: 18px;">M</v-chip>
-              Maintenance required
+            <v-col cols="6" class="py-1 d-flex align-center" style="font-size: 0.875rem;">
+              <v-chip color="orange" variant="tonal" density="compact" size="small" class="mr-3">M</v-chip>
+              Maintenance Required
             </v-col>
-
-            <v-col cols="6" class="py-0 d-flex align-center" style="font-size: 10px;">
-              <v-chip color="red" variant="outlined" density="compact" class="px-4 mr-4"
-                style="font-size: 10px; height: 18px;">R</v-chip>
-              Rejected – repair needed
+            <v-col cols="6" class="py-1 d-flex align-center" style="font-size: 0.875rem;">
+              <v-chip color="red" variant="tonal" density="compact" size="small" class="mr-3">R</v-chip>
+              Rejected
             </v-col>
           </v-row>
         </v-alert>
+
         <!-- Checklist Sections -->
         <v-expansion-panels multiple class="my-4">
           <v-expansion-panel v-for="(section, index) in checklistSections" :key="index">
@@ -336,29 +390,33 @@
               </v-col>
             </v-row>
           </v-col>
-
         </v-row>
       </v-card-text>
     </commons-dialog>
-    <commons-dialog v-model="checklist_dialog" max-width="400" icon="mdi-school" title="Checklist Form"
-      submitText="PRINT" @submit="print_checklist">
+
+    <!-- Daily Checklist Dialog -->
+    <commons-dialog v-model="checklist_dialog" max-width="500" icon="mdi-check-circle-outline"
+      title="Daily Vehicle Checklist" submitText="Generate Report" @submit="print_checklist">
       <v-card-text>
         <v-row dense>
-          <v-col cols="6"> <v-text-field v-model="check.from" label="From" hide-details type="month" /></v-col>
-          <v-col cols="6"> <v-text-field v-model="check.to" label="To" hide-details type="month" /></v-col>
-          <v-col cols="12"> <v-select v-model="check.project" class="mb-2" label="Project" item-title="name"
-              item-value="_id" :items="project_data" density="compact" variant="outlined" hide-details
-              clearable /></v-col>
+          <v-col cols="6">
+            <v-text-field v-model="check.from" label="From" hide-details type="month" variant="underlined"
+              color="primary" />
+          </v-col>
+          <v-col cols="6">
+            <v-text-field v-model="check.to" label="To" hide-details type="month" variant="underlined"
+              color="primary" />
+          </v-col>
+          <v-col cols="12">
+            <v-select v-model="check.project" class="mb-2" label="Project" item-title="name" item-value="_id"
+              :items="project_data" density="compact" variant="underlined" color="primary" hide-details clearable />
+          </v-col>
         </v-row>
       </v-card-text>
     </commons-dialog>
-
-
-
-
-
-  </v-sheet>
+  </div>
 </template>
+
 
 
 <script lang="ts" setup>
@@ -379,6 +437,7 @@ onBeforeMount(() => {
 })
 definePageMeta({ layout: "std-systems" });
 const checklistStore = useChecklist()
+const hover = ref<number | null>(null);
 
 
 interface Vehicle {
